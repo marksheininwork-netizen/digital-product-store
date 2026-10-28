@@ -1,0 +1,27 @@
+-- Run in a NEW Supabase project SQL editor. Never expose service-role keys to browsers.
+create extension if not exists pgcrypto;
+create table public.organizations(id uuid primary key default gen_random_uuid(),name text not null check(length(name) between 1 and 120),created_at timestamptz not null default now());
+create table public.memberships(organization_id uuid not null references public.organizations on delete cascade,user_id uuid not null references auth.users on delete cascade,role text not null check(role in ('owner','admin','member','viewer')),primary key(organization_id,user_id));
+create function public.is_member(org uuid) returns boolean language sql stable security definer set search_path='' as $$select exists(select 1 from public.memberships where organization_id=org and user_id=(select auth.uid()))$$;
+create function public.can_write(org uuid) returns boolean language sql stable security definer set search_path='' as $$select exists(select 1 from public.memberships where organization_id=org and user_id=(select auth.uid()) and role in ('owner','admin','member'))$$;
+create function public.create_organization(organization_name text) returns uuid language plpgsql security definer set search_path='' as $$declare oid uuid;begin if auth.uid() is null then raise exception 'Authentication required';end if;if length(trim(organization_name)) not between 1 and 120 then raise exception 'Invalid name';end if;insert into public.organizations(name) values(trim(organization_name)) returning id into oid;insert into public.memberships(organization_id,user_id,role) values(oid,auth.uid(),'owner');return oid;end$$;
+create table public.leads(id uuid primary key default gen_random_uuid(),organization_id uuid not null references public.organizations on delete cascade,name text not null check(length(name) between 1 and 200),email text,company text,status text not null default 'new' check(status in ('new','contacted','qualified','proposal','won','lost')),value numeric(14,2) not null default 0 check(value>=0),created_at timestamptz not null default now());
+create table public.tasks(id uuid primary key default gen_random_uuid(),organization_id uuid not null references public.organizations on delete cascade,title text not null check(length(title) between 1 and 500),done boolean not null default false,due_at timestamptz,created_at timestamptz not null default now());
+create table public.audit_log(id bigint generated always as identity primary key,organization_id uuid not null references public.organizations on delete cascade,actor_id uuid,entity text not null,entity_id uuid,action text not null,created_at timestamptz not null default now());
+create function public.log_change() returns trigger language plpgsql security definer set search_path='' as $$begin insert into public.audit_log(organization_id,actor_id,entity,entity_id,action) values(coalesce(new.organization_id,old.organization_id),auth.uid(),tg_table_name,coalesce(new.id,old.id),tg_op);return coalesce(new,old);end$$;
+create trigger audit_leads after insert or update or delete on public.leads for each row execute function public.log_change();
+create trigger audit_tasks after insert or update or delete on public.tasks for each row execute function public.log_change();
+alter table public.organizations enable row level security;alter table public.memberships enable row level security;alter table public.leads enable row level security;alter table public.tasks enable row level security;alter table public.audit_log enable row level security;
+create policy org_read on public.organizations for select to authenticated using(public.is_member(id));
+create policy member_read on public.memberships for select to authenticated using(public.is_member(organization_id));
+create policy leads_read on public.leads for select to authenticated using(public.is_member(organization_id));
+create policy leads_insert on public.leads for insert to authenticated with check(public.can_write(organization_id));
+create policy leads_update on public.leads for update to authenticated using(public.can_write(organization_id)) with check(public.can_write(organization_id));
+create policy leads_delete on public.leads for delete to authenticated using(public.can_write(organization_id));
+create policy tasks_read on public.tasks for select to authenticated using(public.is_member(organization_id));
+create policy tasks_insert on public.tasks for insert to authenticated with check(public.can_write(organization_id));
+create policy tasks_update on public.tasks for update to authenticated using(public.can_write(organization_id)) with check(public.can_write(organization_id));
+create policy tasks_delete on public.tasks for delete to authenticated using(public.can_write(organization_id));
+create policy audit_read on public.audit_log for select to authenticated using(public.is_member(organization_id));
+revoke all on function public.create_organization(text) from public,anon;grant execute on function public.create_organization(text) to authenticated;
+revoke all on function public.is_member(uuid),public.can_write(uuid) from public,anon;grant execute on function public.is_member(uuid),public.can_write(uuid) to authenticated;
