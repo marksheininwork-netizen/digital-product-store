@@ -1,0 +1,24 @@
+name: FlowPilot CI
+on:
+  pull_request:
+    paths:
+      - 'flowpilot/**'
+      - '.github/workflows/flowpilot-ci.yml'
+  push:
+    branches: [flowpilot-mvp]
+    paths:
+      - 'flowpilot/**'
+      - '.github/workflows/flowpilot-ci.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flowpilot
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
