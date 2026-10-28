@@ -25,3 +25,6 @@ create policy tasks_delete on public.tasks for delete to authenticated using(pub
 create policy audit_read on public.audit_log for select to authenticated using(public.is_member(organization_id));
 revoke all on function public.create_organization(text) from public,anon;grant execute on function public.create_organization(text) to authenticated;
 revoke all on function public.is_member(uuid),public.can_write(uuid) from public,anon;grant execute on function public.is_member(uuid),public.can_write(uuid) to authenticated;
+-- Trigger functions must not be callable through the Data API.
+revoke all on function public.log_change() from public,anon,authenticated;
+revoke all on function public.rls_auto_enable() from public,anon,authenticated;
