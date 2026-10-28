@@ -1,0 +1,1 @@
+export async function onRequestPost(){return Response.json({error:'Webhook fulfillment not configured; no orders are being fulfilled.'},{status:503})}
