@@ -1,0 +1,1 @@
+export async function onRequestPost(){return Response.json({error:'Customer portal requires authenticated customer identity; not configured yet.'},{status:503})}
