@@ -1,0 +1,3 @@
+﻿Month,Category,Description,Budget,Actual,Variance
+January,Revenue,Example sales,3000,2800,=D2-E2
+January,Expense,Example hosting,100,75,=D3-E3
