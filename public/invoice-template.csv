@@ -1,0 +1,2 @@
+﻿Invoice Number,Customer,Date,Item,Quantity,Unit Price,Line Total
+INV-001,Example Customer,2026-11-01,Example service,2,50,=E2*F2
