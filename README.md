@@ -1,20 +1,11 @@
-# Northstar Studio — GitHub Pages ready
+# Northstar Studio — flat GitHub upload
 
-This is a complete replacement for the repository source, not an incremental patch. Upload the contents of this folder to the **root** of `marksheininwork-netizen/digital-product-store`, preserving directories. Replace existing files when GitHub prompts. Existing unrelated repository files can remain.
+**Every file in this ZIP is in one folder. No subfolders.** Extract, select all files, and upload them into the **root** of your `digital-product-store` GitHub repository. Replace existing matching files, then commit.
 
-## Included
-- Searchable, filterable storefront with 10 genuinely downloadable starter resources
-- 10 interactive browser tools: invoice preview/print, timer, budget, word counter, password generator, QR generator, profit margin, text case, palette, and priority matrix
-- Toolkit recommendations, favorites stored in this browser, dark-mode toggle, responsive layout
-- GitHub Pages workflow that builds Vite and deploys `dist`
+This edition has 12 website pages, 18 browser tools and 18 downloads. `index.html` now uses the same multi-page app as the other pages; all pages load root-level `pages.js`, `style.css` and `pages.css`. Download resources also live at the root, and the Vite config includes them in the deployment.
 
-## Deployment
-1. Upload `index.html`, `package.json`, `vite.config.js`, `src/`, `public/`, and `.github/` into repository root.
-2. In Settings → Pages select **GitHub Actions**.
-3. Wait for the Actions deployment and open https://marksheininwork-netizen.github.io/digital-product-store/
+The existing `.github/workflows/static.yml` in your repository remains in place. **Do not delete the existing `.github` directory**. Uploading these flat files does not remove old files; the old `src/` and `public/` folders may remain, but this build does not use them.
 
-## Local development
-`npm install` then `npm run dev`. `npm run build` builds production files.
+After committing, verify GitHub Actions succeeded, then visit https://marksheininwork-netizen.github.io/digital-product-store/
 
-## Honest limitations
-No checkout, subscriptions, authentication, secure cloud storage, or customer billing are implemented. Downloads are free. Favorites and theme are stored in localStorage on one browser. The QR code generator sends its entered text to a third-party image API, so do not enter private information. Printed invoice previews are not persisted. This is a static GitHub Pages app.
+No real payments, cloud accounts or server-side messaging are implemented. Favorites and notes save locally in the browser. QR images use an external QR API.
