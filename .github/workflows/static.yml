@@ -29,6 +29,8 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install
+      - name: Run regression tests
+        run: npm test
       - name: Build site
         run: npm run build
       - name: Configure Pages
