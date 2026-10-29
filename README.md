@@ -1,34 +1,20 @@
-# Northstar Studio — Digital Product Store
+# Northstar Studio — GitHub Pages ready
 
-A responsive Vite storefront prototype with Cloudflare Pages Functions and a Stripe-hosted Checkout **test-mode scaffold**.
+This is a complete replacement for the repository source, not an incremental patch. Upload the contents of this folder to the **root** of `marksheininwork-netizen/digital-product-store`, preserving directories. Replace existing files when GitHub prompts. Existing unrelated repository files can remain.
 
-## Current implementation
-- Mobile-responsive storefront with three illustrative products and a membership preview.
-- Stripe Checkout server endpoint at `POST /api/checkout` accepts a strict SKU allowlist, reads Stripe secret and price IDs only from Cloudflare environment variables, and returns a hosted checkout URL.
-- Checkout buttons remain disabled pending actual downloadable products and verified fulfillment.
-- Customer portal and webhook routes deliberately return 503 until authenticated customer access and signed webhook verification are implemented.
-- **No payment fulfillment, subscriptions, live transactions, or deployment is claimed.**
+## Included
+- Searchable, filterable storefront with 10 genuinely downloadable starter resources
+- 10 interactive browser tools: invoice preview/print, timer, budget, word counter, password generator, QR generator, profit margin, text case, palette, and priority matrix
+- Toolkit recommendations, favorites stored in this browser, dark-mode toggle, responsive layout
+- GitHub Pages workflow that builds Vite and deploys `dist`
+
+## Deployment
+1. Upload `index.html`, `package.json`, `vite.config.js`, `src/`, `public/`, and `.github/` into repository root.
+2. In Settings → Pages select **GitHub Actions**.
+3. Wait for the Actions deployment and open https://marksheininwork-netizen.github.io/digital-product-store/
 
 ## Local development
-```bash
-npm install
-npm run dev
-npm run build
-```
-Cloudflare Pages Functions require a compatible Cloudflare local environment for API testing; Vite alone serves the frontend.
+`npm install` then `npm run dev`. `npm run build` builds production files.
 
-## Cloudflare deployment
-- Framework: Vite; build command: `npm run build`; output directory: `dist`.
-- Connect this GitHub repo to Cloudflare Pages. Set Stripe values as encrypted environment secrets (see `.env.example`).
-- Do not set production Stripe keys before signed webhook verification and private-file fulfillment are finished.
-
-## Before enabling purchases
-1. Create original downloadable products and private storage; define actual license and refund terms.
-2. Create matching Stripe test products/prices; add price IDs and test secret key in Cloudflare environment.
-3. Implement webhook signature verification using raw request body and `STRIPE_WEBHOOK_SECRET`.
-4. Implement durable order records, idempotent fulfillment, signed download links, and subscription entitlement updates.
-5. Implement customer identity and secure Billing Portal creation server-side.
-6. Test success, cancellation, declined payments, disputes, refunds, subscription renewal and cancellation.
-7. Complete Stripe business activation and move to live mode only with account-owner approval.
-
-Never expose Stripe secret keys in the browser or commit them to GitHub.
+## Honest limitations
+No checkout, subscriptions, authentication, secure cloud storage, or customer billing are implemented. Downloads are free. Favorites and theme are stored in localStorage on one browser. The QR code generator sends its entered text to a third-party image API, so do not enter private information. Printed invoice previews are not persisted. This is a static GitHub Pages app.

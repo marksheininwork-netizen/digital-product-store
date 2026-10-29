@@ -1,14 +1,5 @@
 {
-  "name": "digital-product-store",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "vite": "^6.3.0"
-  }
+  "name":"northstar-studio","version":"1.0.0","private":true,"type":"module",
+  "scripts":{"dev":"vite","build":"vite build","preview":"vite preview"},
+  "dependencies":{"vite":"^6.3.0"}
 }
