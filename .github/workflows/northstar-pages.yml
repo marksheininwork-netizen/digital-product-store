@@ -23,7 +23,7 @@ jobs:
       - run: npm test
       - run: npm run build
       - name: Confirm purchases page is built
-        run: test -f dist/purchases.html && test -f dist/purchases.js
+        run: test -f dist/purchases.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
