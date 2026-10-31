@@ -1,0 +1,22 @@
+name: Fulfillment security tests
+on:
+  push:
+    paths:
+      - 'fulfillment/**'
+      - '.github/workflows/fulfillment-tests.yml'
+  pull_request:
+    paths:
+      - 'fulfillment/**'
+      - '.github/workflows/fulfillment-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run Stripe fulfillment tests
+        run: node --test fulfillment/worker.test.js
