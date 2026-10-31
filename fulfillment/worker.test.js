@@ -8,7 +8,7 @@ const env={STRIPE_SECRET_KEY:'sk_test_placeholder',STRIPE_WEBHOOK_SECRET:secret,
 const sessionId='cs_test_123456789';
 const price='price_1UWRdGAfTAEIufppLb4bkU7K';
 const originalFetch=globalThis.fetch;
-function stripeMock({paid=true,items=[price]}={}){globalThis.fetch=async(url,options)=>{assert.match(options.headers.authorization,/Bearer sk_test_placeholder/);const u=new URL(url);if(u.pathname.endsWith('/line_items'))return new Response(JSON.stringify({data:items.map(id=>({price:{id}}))}),{status:200});return new Response(JSON.stringify({id:sessionId,livemode:false,mode:'payment',payment_status:paid?'paid':'unpaid'}),{status:200})}}
+function stripeMock({paid=true,items=[price]}={}){globalThis.fetch=async(url,options)=>{assert.match(options.headers.authorization,/Bearer sk_test_placeholder/);const u=new URL(url);if(u.pathname.endsWith('/line_items'))return new Response(JSON.stringify({data:items.map(id=>({price:{id}}))}),{status:200});return new Response(JSON.stringify({id:sessionId,livemode:false,mode:'payment',payment_status:paid?'paid':'unpaid',amount_total:900}),{status:200})}}
 test.afterEach(()=>{globalThis.fetch=originalFetch});
 const call=(path,method='GET',headers={},body)=>worker.fetch(new Request('https://example.workers.dev'+path,{method,headers,body}),env);
 async function signature(body,t=Math.floor(Date.now()/1000)){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);const mac=new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(t+'.'+body)));return 't='+t+',v1='+Array.from(mac,x=>x.toString(16).padStart(2,'0')).join('')}
