@@ -16,7 +16,7 @@ In Supabase project > Edge Functions > Secrets, configure:
 - `STRIPE_PRICE_MEMBERSHIP`: `price_1UX2FEAfTAEIufppHPNI9YnY` (sandbox $12/month).
 - `NORTHSTAR_FILE_FOCUS`, `NORTHSTAR_FILE_LAUNCH`, `NORTHSTAR_FILE_CREATOR`: exact private object paths for matching products in bucket `northstar-private-products`.
 
-The webhook must receive: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, and `customer.subscription.deleted`. Configure the endpoint in **Stripe sandbox**, not live mode.
+The webhook must receive: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `charge.refunded`, and `charge.dispute.created`. Configure the endpoint in **Stripe sandbox**, not live mode.
 
 Checkout endpoint: `https://hwsavnkammbhgizltqrc.supabase.co/functions/v1/northstar-checkout`. POST JSON `{"sku":"membership"}` from the allowed storefront origin. Browser should redirect to returned `url`. Do not send secret keys to browser.
 
@@ -25,7 +25,7 @@ Checkout endpoint: `https://hwsavnkammbhgizltqrc.supabase.co/functions/v1/norths
 - Connect frontend purchase buttons to the Checkout Edge Function (currently the test-store uses hosted Stripe test Payment Links).
 - Test webhook delivery and check that exactly one order and order item appear after successful sandbox payment.
 - Verify signed private download and that another user cannot access it.
-- Implement verified subscription entitlement checks, customer portal, refund/dispute handling, failed payment lifecycle, and complete end-to-end tests.
+- Implement verified subscription entitlement checks, customer portal, failed payment lifecycle, and complete end-to-end tests. Full-refund/dispute status updates are now implemented but still need live Stripe sandbox event verification.
 - Resolve Stripe verification, legal name/DBA and tax obligations before any live payments.
 - Never assume a redirect proves payment. Never enable live payments with sandbox keys or test webhooks.
 
