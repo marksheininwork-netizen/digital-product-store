@@ -2,6 +2,12 @@
 
 Last reviewed: 2026-10-31
 
+## Seller identity and branding
+- Intended legal seller: **Maria Sheinin**, sole proprietor, subject to her approval and completion of Stripe verification.
+- Northstar Studio is retained as a project/product collection label, not represented as a registered entity.
+- No DBA or EIN is claimed. Confirm local naming rules before accepting real payments.
+- Stripe legal account details, bank information, and SSN must be entered directly by Maria in Stripe, not in GitHub or Supabase.
+
 ## Verified foundation
 - GitHub Pages storefront and account portal are available.
 - Supabase Auth email-link sign-in, private bucket, and order recorder are deployed.
