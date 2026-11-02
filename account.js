@@ -1,4 +1,8 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0?bundle";
+(async function startAccount(){
+let createClient;
+const sources=["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/+esm","https://esm.sh/@supabase/supabase-js@2.58.0?bundle"];
+for(const source of sources){try{const mod=await import(source);if(typeof mod.createClient==="function"){createClient=mod.createClient;break}}catch(error){console.warn("Supabase source unavailable",source,error)}}
+if(!createClient){document.getElementById("message").textContent="Account sign-in could not load. Please refresh or contact support.";return}
 const URL='https://hwsavnkammbhgizltqrc.supabase.co',KEY='sb_publishable_xLlopkrV4mLa2TQv2VIrVg_AnlOPHuM',API=URL+'/functions/v1/northstar-private-downloads';
 const supabase=createClient(URL,KEY,{auth:{detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id),say=text=>$('message').textContent=text;
@@ -19,3 +23,5 @@ $('save-settings').onclick=async()=>{const {data:{session}}=await supabase.auth.
 
 // Authenticated sandbox Stripe billing portal (server verifies identity and customer mapping).
 $('billing-portal').onclick=async()=>{const btn=$('billing-portal');btn.disabled=true;try{const {data:{session}}=await supabase.auth.getSession();if(!session)throw Error('Sign in first to manage a test subscription.');const response=await fetch(URL+'/functions/v1/northstar-billing-portal',{method:'POST',headers:{authorization:'Bearer '+session.access_token,apikey:KEY,'content-type':'application/json'},body:'{}'});const result=await response.json();if(!response.ok||!result.url)throw Error(result.error||'Billing portal unavailable');if(!result.url.startsWith('https://billing.stripe.com/'))throw Error('Unexpected billing portal URL');window.location.assign(result.url)}catch(e){say(e.message);btn.disabled=false}};
+
+})().catch(error=>{console.error("Account startup failed",error);const el=document.getElementById("message");if(el)el.textContent="Account page error: "+error.message});
