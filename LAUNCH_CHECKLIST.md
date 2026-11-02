@@ -59,4 +59,5 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - The currently available production browser profile is signed out, so the deployed .doc/.csv fallback and allowed Auth redirect still need signed-in end-to-end verification.
 - Stripe remains in test mode. No real charge was made.
 - Current real-purchase backend state: checkout gate probe returned 503 before contacting Stripe; the live webhook returned 503 because live credentials are not configured; private-download health returned 200 with `mode=live_and_test_separated`. Supabase migration `20261102225132` is present and the live RPC grants were verified read-only.
-- Local regression suite passed 15/15 and Vite build completed successfully after these changes. GitHub Actions deployment is pending this commit.
+- GitHub Actions run `41541107271` for commit `0712759ca8aec74a45698739650cd12986abbe17` passed dependency installation, 15 regression tests, the Vite production build, and GitHub Pages deployment.
+- Independent production-browser check at `https://northstar.atlaspointdigital.com/account.html?release=0712759` showed the updated order-history wording and the signed-out account portal; the page still clearly says test purchases only while real checkout remains locked.
