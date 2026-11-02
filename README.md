@@ -1,11 +1,30 @@
-# Northstar Studio — flat GitHub upload
+# Northstar Studio
 
-**Every file in this ZIP is in one folder. No subfolders.** Extract, select all files, and upload them into the **root** of your `digital-product-store` GitHub repository. Replace existing matching files, then commit.
+Northstar Studio is a digital-products and micro-SaaS storefront. The project uses a Vite multi-page frontend deployed through GitHub Actions to GitHub Pages at the custom domain `northstar.atlaspointdigital.com`.
 
-This edition has 12 website pages, 18 browser tools and 18 downloads. `index.html` now uses the same multi-page app as the other pages; all pages load root-level `pages.js`, `style.css` and `pages.css`. Download resources also live at the root, and the Vite config includes them in the deployment.
+## Development
 
-The existing `.github/workflows/static.yml` in your repository remains in place. **Do not delete the existing `.github` directory**. Uploading these flat files does not remove old files; the old `src/` and `public/` folders may remain, but this build does not use them.
+```sh
+npm install
+npm run dev
+npm run build
+npm test
+```
 
-After committing, verify GitHub Actions succeeded, then visit https://marksheininwork-netizen.github.io/digital-product-store/
+## Current integrations
 
-No real payments, cloud accounts or server-side messaging are implemented. Favorites and notes save locally in the browser. QR images use an external QR API.
+- Supabase: authentication, customer profile settings, and secure purchased-file access through server-side entitlement checks.
+- Stripe: **test mode only**. Live checkout is not enabled.
+- GitHub Actions: deployment to GitHub Pages. Verify deployment runs and actual browser behavior before claiming a release is live.
+
+## Purchased-product access
+
+The account page offers secure in-browser viewing, PDF preview, Save to Files, Word-compatible .doc, and Excel-compatible .csv options. Not every format is appropriate for every product. The Office-compatible exports are not native Microsoft cloud documents. Features require device testing.
+
+Google Docs/Sheets and Google Sign-In are **deferred**; they are not currently live customer features. The ChatGPT Google Drive connector is not a backend credential for the storefront.
+
+## Release tracking
+
+See [LAUNCH_CHECKLIST.md](./LAUNCH_CHECKLIST.md) for release validation, remaining features, legal requirements and production readiness.
+
+**Do not enable live payments until legal, payment, tax, and security requirements have been reviewed and verified.**
