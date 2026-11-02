@@ -17,6 +17,19 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [x] Resolve the Supabase Preview migration failure before the next database change. The preview logs identified missing local migration versions; canonical migration files matching the five already-applied production versions were restored to the repository. The later preview run reported “All migrations are up to date” (2 skipped, no migration errors).
 - [ ] Enable Supabase Auth leaked-password protection and verify. The security advisor reports it disabled; Supabase currently offers this only on the Pro plan, which costs $25/month. Upgrade requires the account owner to authorize paid billing.
 
+## Real-purchase preparation — 2026-11-02
+- [x] Add explicit `livemode` fields to orders, Stripe event records, and memberships; apply Supabase migration `20261102225132_northstar_payment_mode_isolation`. Existing records remain sandbox by default.
+- [x] Add separate service-role-only live fulfillment and live refund/dispute RPCs. Verified `anon` and `authenticated` cannot execute them; `service_role` can.
+- [x] Bring the live Checkout, live webhook, and private-download Edge Function source into this repository. Supabase has live checkout v3, live webhook v4, and private downloads v13 deployed.
+- [x] Keep live Checkout locked with a source-level `LIVE_SALES_RELEASED = false` interlock, in addition to its Supabase environment switch. A non-purchasing production probe returned HTTP 503 with “Purchases are not yet available”; no Checkout Session was created.
+- [x] Restrict the prepared live Checkout catalog to the three one-time digital products. Toolbox Plus subscriptions remain excluded until live membership entitlements and live billing-portal management are implemented.
+- [x] Make the account purchase library label sandbox purchases as test and reserve “Paid” for records marked live. The signed-in account page does not claim that a test purchase was a real payment.
+- [x] Add the package lockfile and change the Pages workflow to deterministic `npm ci` installs.
+- [ ] Configure and independently verify the three live price IDs, live Stripe secret, and live webhook signing secret in Supabase. These are not present in the connected sandbox; no live credentials were read or added.
+- [ ] Configure a real Stripe live webhook endpoint for `northstar-live-webhook` and verify test delivery using Stripe’s Live account only after merchant readiness; current webhook safely returns HTTP 503 while live secrets are missing.
+- [ ] Add customer-facing live purchase links and product disclosures only after live product prices, customer terms/support, tax treatment, and business verification are ready.
+- [ ] Keep live sales disabled until the owner confirms the legal, payment, tax, refund, payout, and support gates are complete.
+
 ## Final launch tasks — deferred
 - [ ] Google Sign-In: OAuth credentials, redirect domains, consent, linking and mobile testing.
 - [ ] Google Docs/Sheets: secure backend Drive authorization; complete native master templates; verified purchaser-specific copy/shared access; genuine new-tab Docs/Sheets URLs.
@@ -45,3 +58,5 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - Updated the Email Swipe File Payment Link in test mode to redirect to the Northstar account page and mark its fulfillment as verified. Updated the Stripe Test Store notice to distinguish that verified product from the still-unverified Cleaning Business Brand Kit, Niche Template Bundle and inactive subscription delivery.
 - The currently available production browser profile is signed out, so the deployed .doc/.csv fallback and allowed Auth redirect still need signed-in end-to-end verification.
 - Stripe remains in test mode. No real charge was made.
+- Current real-purchase backend state: checkout gate probe returned 503 before contacting Stripe; the live webhook returned 503 because live credentials are not configured; private-download health returned 200 with `mode=live_and_test_separated`. Supabase migration `20261102225132` is present and the live RPC grants were verified read-only.
+- Local regression suite passed 15/15 and Vite build completed successfully after these changes. GitHub Actions deployment is pending this commit.
