@@ -1,4 +1,5 @@
-import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/+esm';
+const {createClient}=window.supabase;
+if(typeof createClient!=="function")throw new Error("Authentication library failed to load. Please refresh.");
 const URL='https://hwsavnkammbhgizltqrc.supabase.co',KEY='sb_publishable_xLlopkrV4mLa2TQv2VIrVg_AnlOPHuM',API=URL+'/functions/v1/northstar-private-downloads';
 const supabase=createClient(URL,KEY,{auth:{detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id),say=text=>$('message').textContent=text;
