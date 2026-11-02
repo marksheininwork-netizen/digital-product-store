@@ -2,17 +2,19 @@
 Updated 2026-11-02. This is a task list, not a declaration of completion.
 
 ## Current release checks
-- [x] Verify GitHub Actions deploy, custom domain, and fresh assets (run 41535047458 succeeded for commit `acab345`; production pages independently checked on 2026-11-02).
-- [ ] Test account sign-in/out, session expiry, purchase library and settings persistence.
-- [ ] Test server-authorized purchased-product access and error states.
+- [x] Verify GitHub Actions deploy, custom domain, and fresh assets. Run 41536768022 succeeded for commit `f1701e5d7366340d0983a284baa1ec2bc4ed7f72`; production account page loads the current portal.
+- [ ] Test account sign-in/out, session expiry, purchase library and settings persistence in the production browser profile.
+- [x] Verify a signed-in account can open an entitled product in a new tab. Existing authorized test purchase opened successfully.
+- [ ] Test server-authorized purchased-product access and error states, including an unauthorized account.
 - [ ] Test Open in new tab and PDF in new tab on iPhone Safari and desktop.
-- [ ] Test Save to Files, Word-compatible .doc, Excel-compatible .csv and ZIP behavior.
-- [ ] Verify no dead buttons, broken links, accessibility or mobile layout regressions.
-- [ ] Test Stripe sandbox checkout to purchase entitlement and access.
-- [x] Run `npm test` and `npm run build` in GitHub Actions (run 41535228709).
+- [x] Verify Save to Files opens the native share sheet with the authorized product file.
+- [ ] Verify the deployed Word-compatible .doc and Excel-compatible .csv exports download successfully after the file-share fallback fix.
+- [ ] Verify ZIP behavior, dead buttons, broken links, accessibility and mobile layout regressions.
+- [ ] Test Stripe sandbox checkout to purchase entitlement and access. Do not use live mode or initiate real charges.
+- [x] Run `npm test` and `npm run build` in GitHub Actions (run 41536768022).
 - [ ] Review release logs and verify the rollback process.
-- [ ] Resolve the Supabase Preview migration failure before the next database change; preview branch `main` reports `MIGRATIONS_FAILED` while production remains `ACTIVE_HEALTHY`.
-- [ ] Enable Supabase Auth leaked-password protection and verify; the security advisor currently reports it disabled.
+- [x] Resolve the Supabase Preview migration failure before the next database change. The preview logs identified missing local migration versions; canonical migration files matching the five already-applied production versions were restored to the repository. The later preview run reported “All migrations are up to date” (2 skipped, no migration errors).
+- [ ] Enable Supabase Auth leaked-password protection and verify. The security advisor reports it disabled; Supabase currently offers this only on the Pro plan, which costs $25/month. Upgrade requires the account owner to authorize paid billing.
 
 ## Final launch tasks — deferred
 - [ ] Google Sign-In: OAuth credentials, redirect domains, consent, linking and mobile testing.
@@ -28,13 +30,13 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - ChatGPT's connected Google Drive plugin does not automatically give the Northstar website Google API access.
 - Treat a GitHub commit, successful deployment and browser verification as three separate states.
 
-
 ## Verified audit evidence — 2026-11-02
-- Release commit: `acab345f6e5aa9938ed154a54514cd02ce8051ef` removes the temporary “Deployment check · CORAL STAR 12” banner from the account page.
+- Release commit `acab345f6e5aa9938ed154a54514cd02ce8051ef` removes the temporary “Deployment check · CORAL STAR 12” banner from the account page.
 - GitHub Actions run 41535047458 passed `npm test`, `npm run build`, and GitHub Pages deployment.
-- Production browser check: home and product catalog load; catalog shows 21 downloads; searching “Uber Driver” returns the matching single product; signed-out account page loads with sign-in, library, order-history, and settings sections; no account-page console errors were observed. The temporary deployment banner is absent after deployment.
+- Latest account export fix commit `f1701e5d7366340d0983a284baa1ec2bc4ed7f72` passed GitHub Actions run 41536768022, including tests, build, and deployment.
+- Production browser check: home and product catalog load; catalog shows 21 downloads; searching “Uber Driver” returns the matching single product; signed-out account page loads with sign-in, library, order-history, and settings sections. The latest portal loads on the production custom domain.
+- Earlier authenticated browser check: two existing test purchases appeared in the account library and order history; opening an entitled product in a new tab succeeded. Save to Files presented a 14 KB product document in the native share sheet. The Word export action failed with “Permission denied,” which prompted the deployed fallback change: if native file sharing rejects the request, the account now offers a direct download link. Re-test the deployed .doc and .csv actions while signed into the account before checking those boxes.
 - Supabase project `hwsavnkammbhgizltqrc` is active. The `northstar-private-products` bucket is private. `northstar_profiles` has per-user insert/read/update policies; order, order-item, membership, and Stripe-event tables have no browser policies.
 - Supabase security advisor reports leaked-password protection is disabled. It also reports four RLS-enabled tables without policies (expected for server-only data); performance advisor reports no findings.
-- Supabase's GitHub Preview check for commit `7745430` failed; the non-persistent preview branch reports `MIGRATIONS_FAILED`, while the production project is `ACTIVE_HEALTHY`. This did not block the GitHub Pages deploy. The preview failure details were not exposed by the connected read-only branch interface.
-- Authenticated account journeys, device-specific exports, a new sandbox checkout, and unauthorized-user attempts remain unverified in this release. No new checkout or real payment was initiated.
-
+- Supabase Auth Site URL is `https://northstar.atlaspointdigital.com`. The exact production account redirect `https://northstar.atlaspointdigital.com/account.html` was added to the allowed redirect URLs after user authorization. The currently available production browser profile is signed out, so the redirect still needs an end-to-end email-link check.
+- No new checkout or payment was initiated. Stripe remains in test mode.
