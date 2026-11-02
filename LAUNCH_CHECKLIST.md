@@ -9,7 +9,10 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [ ] Test Save to Files, Word-compatible .doc, Excel-compatible .csv and ZIP behavior.
 - [ ] Verify no dead buttons, broken links, accessibility or mobile layout regressions.
 - [ ] Test Stripe sandbox checkout to purchase entitlement and access.
-- [ ] Run build and tests; check release logs and rollback process.
+- [x] Run `npm test` and `npm run build` in GitHub Actions (run 41535228709).
+- [ ] Review release logs and verify the rollback process.
+- [ ] Resolve the Supabase Preview migration failure before the next database change; preview branch `main` reports `MIGRATIONS_FAILED` while production remains `ACTIVE_HEALTHY`.
+- [ ] Enable Supabase Auth leaked-password protection and verify; the security advisor currently reports it disabled.
 
 ## Final launch tasks — deferred
 - [ ] Google Sign-In: OAuth credentials, redirect domains, consent, linking and mobile testing.
@@ -32,5 +35,6 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - Production browser check: home and product catalog load; catalog shows 21 downloads; searching “Uber Driver” returns the matching single product; signed-out account page loads with sign-in, library, order-history, and settings sections; no account-page console errors were observed. The temporary deployment banner is absent after deployment.
 - Supabase project `hwsavnkammbhgizltqrc` is active. The `northstar-private-products` bucket is private. `northstar_profiles` has per-user insert/read/update policies; order, order-item, membership, and Stripe-event tables have no browser policies.
 - Supabase security advisor reports leaked-password protection is disabled. It also reports four RLS-enabled tables without policies (expected for server-only data); performance advisor reports no findings.
+- Supabase's GitHub Preview check for commit `7745430` failed; the non-persistent preview branch reports `MIGRATIONS_FAILED`, while the production project is `ACTIVE_HEALTHY`. This did not block the GitHub Pages deploy. The preview failure details were not exposed by the connected read-only branch interface.
 - Authenticated account journeys, device-specific exports, a new sandbox checkout, and unauthorized-user attempts remain unverified in this release. No new checkout or real payment was initiated.
 
