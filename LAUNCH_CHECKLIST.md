@@ -25,10 +25,14 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [x] Restrict the prepared live Checkout catalog to the three one-time digital products. Toolbox Plus subscriptions remain excluded until live membership entitlements and live billing-portal management are implemented.
 - [x] Make the account purchase library label sandbox purchases as test and reserve “Paid” for records marked live. The signed-in account page does not claim that a test purchase was a real payment.
 - [x] Add the package lockfile and change the Pages workflow to deterministic `npm ci` installs.
-- [ ] Configure and independently verify the three live price IDs, live Stripe secret, and live webhook signing secret in Supabase. These are not present in the connected sandbox; no live credentials were read or added.
-- [ ] Configure a real Stripe live webhook endpoint for `northstar-live-webhook` and verify test delivery using Stripe’s Live account only after merchant readiness; current webhook safely returns HTTP 503 while live secrets are missing.
-- [ ] Add customer-facing live purchase links and product disclosures only after live product prices, customer terms/support, tax treatment, and business verification are ready.
-- [ ] Keep live sales disabled until the owner confirms the legal, payment, tax, refund, payout, and support gates are complete.
+- [x] Inspect Stripe Live catalog and webhook. Live one-time prices exist: Email Swipe File $9 (`price_1UX7YePKQ5OP9J0xqjZj8s2K`), Cleaning Business Brand Kit $19 (`price_1UX7YePKQ5OP9J0xCWjv4eMm`), and Niche Template Bundle $29 (`price_1UX7YePKQ5OP9J0xXOYIpw79`). Toolbox Plus has a $12/month live price but remains excluded. An unrelated `myproduct` entry has no price and is not part of Northstar.
+- [x] Inspect Stripe Live webhook. Endpoint `we_1UX8IAPKQ5OP9J0xIYGO18DU` is enabled at the production `northstar-live-webhook` URL. It currently subscribes to checkout, refund/dispute, and subscription events; the handler intentionally ignores subscriptions.
+- [x] Add the three verified Stripe Live price IDs for Email Swipe File ($9), Cleaning Business Brand Kit ($19), and Niche Template Bundle ($29) to Supabase under the exact names expected by the live functions.
+- [ ] Configure `NORTHSTAR_LIVE_CHECKOUT_ENABLED=true` and `NORTHSTAR_STRIPE_LIVE_WEBHOOK_SECRET` in Supabase. The authenticated dashboard lists `NORTHSTAR_STRIPE_LIVE_SECRET_KEY`, but its value was not viewed or validated. The live webhook returns HTTP 503 (“Live webhook not configured”); no credential values were retrieved or added.
+- [ ] Complete Stripe merchant verification and supply the business head-office information. The connected Stripe Live Tax Settings response is `pending` because `head_office` is missing; no active tax registrations are recorded. Do not enable automatic tax or infer registration obligations without confirmed business registration and advice.
+- [ ] Configure and verify the live webhook signing secret in Supabase, then verify signed event delivery without creating a real payment. Stripe's signing secret must be transferred securely from the enabled live endpoint to the Supabase function secret; this has not been done.
+- [ ] Add customer-facing live purchase actions only after tax, customer terms/refunds/support, and merchant verification are ready. Current shop buttons remain disabled and the checkout function remains source-locked.
+- [ ] Release live sales only after legal, payment, tax, refund, payout, and support gates are complete. The owner has authorized the live transition, but live sales are not enabled. Stripe Tax remains `pending` because the account's head-office details are missing, there are no active tax registrations, the product metadata still says `test_only`, and the webhook credential and release switch are incomplete.
 
 ## Final launch tasks — deferred
 - [ ] Google Sign-In: OAuth credentials, redirect domains, consent, linking and mobile testing.
@@ -39,7 +43,7 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [ ] Production monitoring, backups, support, email deliverability and analytics.
 
 ## Guardrails
-- Stripe stays in test mode until the launch requirements are met.
+- Do not accept real payments until fulfillment, merchant, tax, customer terms, refunds, payouts, and support are ready.
 - Do not expose paid master documents through public sharing links.
 - ChatGPT's connected Google Drive plugin does not automatically give the Northstar website Google API access.
 - Treat a GitHub commit, successful deployment and browser verification as three separate states.
@@ -57,7 +61,8 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - Three existing paid test sessions for the $9 Email Swipe File each have a corresponding paid Supabase order and private storage entitlement (`email-swipe-file.txt`). The signed-in production account showed two purchases; the purchased product opened successfully in a new tab. No extra checkout or payment was initiated for this audit.
 - Updated the Email Swipe File Payment Link in test mode to redirect to the Northstar account page and mark its fulfillment as verified. Updated the Stripe Test Store notice to distinguish that verified product from the still-unverified Cleaning Business Brand Kit, Niche Template Bundle and inactive subscription delivery.
 - The currently available production browser profile is signed out, so the deployed .doc/.csv fallback and allowed Auth redirect still need signed-in end-to-end verification.
-- Stripe remains in test mode. No real charge was made.
-- Current real-purchase backend state: checkout gate probe returned 503 before contacting Stripe; the live webhook returned 503 because live credentials are not configured; private-download health returned 200 with `mode=live_and_test_separated`. Supabase migration `20261102225132` is present and the live RPC grants were verified read-only.
+- The owner authorized a live transition on 2026-11-02. Stripe Live was inspected: the three intended one-time prices and an enabled production webhook exist, but product records still carry `status=test_only` metadata. Stripe Tax is `pending` with missing `head_office`, and the registrations list is empty. No real charge was made.
+- Authenticated Chrome tabs for Stripe Live and Supabase project `hwsavnkammbhgizltqrc` were available for this audit. The three verified live price IDs have now been saved to Supabase. The live API-key name is present, but its value and validity were not viewed or verified. The checkout enable switch and live webhook signing-secret name remain absent. Stripe account acceptance/payout verification was not established. The app’s checkout remains locked, and the shop continues to disable purchase buttons.
+- Current real-purchase backend state: checkout gate probe returned 503 before contacting Stripe; the live webhook returned 503 because its signing secret is absent; private-download health returned 200 with `mode=live_and_test_separated`. Supabase migration `20261102225132` is present and the live RPC grants were verified read-only.
 - GitHub Actions run `41541107271` for commit `0712759ca8aec74a45698739650cd12986abbe17` passed dependency installation, 15 regression tests, the Vite production build, and GitHub Pages deployment.
 - Independent production-browser check at `https://northstar.atlaspointdigital.com/account.html?release=0712759` showed the updated order-history wording and the signed-out account portal; the page still clearly says test purchases only while real checkout remains locked.
