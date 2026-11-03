@@ -51,6 +51,7 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - Treat a GitHub commit, successful deployment and browser verification as three separate states.
 
 ## Verified audit evidence — 2026-11-02
+- GitHub main documentation updates `a0c3474c1feec255c3286fc5f6d5eab02b002b` and `e8cd230668262562dd9b00fd1e7129878db9f4a4` recorded the Supabase webhook secret setup. Actions run `41550770048` for `e8cd230668262562dd9b00fd1e7129878db9f4a4` passed dependency installation, regression tests, production build, and GitHub Pages deployment. The production browser still shows `business verification pending · ... · Test purchases only`; live checkout remains gated.
 - Release commit `acab345f6e5aa9938ed154a54514cd02ce8051ef` removes the temporary “Deployment check · CORAL STAR 12” banner from the account page.
 - GitHub Actions run 41535047458 passed `npm test`, `npm run build`, and GitHub Pages deployment.
 - Latest account export fallback commit `9d9adaa98a46bf3d60709321722416ebaf6f8f5e` passed GitHub Actions run 41537916098, including tests, build, and deployment. Word/CSV exports now use direct downloads; Save to Files retains the native share attempt and falls back to a direct download when sharing is unavailable.
