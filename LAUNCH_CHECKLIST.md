@@ -114,3 +114,7 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - Deployed endpoint probes: checkout returns 503 (release lock); webhook returns 503 (live configuration invalid). Neither probe creates a charge or entitlement.
 - Post-migration security advisor: five server-only tables have RLS with no browser policies (intentional; permissions verified). Existing leaked-password protection warning remains; no paid upgrade performed.
 - Next priorities: replace the rejected live credential and verify actual Stripe delivery; confirm legal merchant identity/monitored support/tax treatment; complete signed-in purchase/download/refund checks before releasing sales.
+
+## 2026-11-03 account export reliability patch
+- [x] Source fix committed as `125ae24b14e434e9c270ac85e4fb8ded81160a11`: PDF library failure now clears its loader for retry; export failures now show an inline accessible alert beside the product. Confirmed by reading back the committed `main` source.
+- [ ] Verify GitHub Actions build/test/deployment for this commit and independently test the live account page; no live-browser verification is claimed for this patch.
