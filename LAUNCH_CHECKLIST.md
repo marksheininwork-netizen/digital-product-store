@@ -106,7 +106,11 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [x] Database assertions passed for refund-before-order, duplicate event/item, late completion, disputed order, refund precedence, and browser-role permission denial. Synthetic records were rolled back; no real payment was made.
 - [x] Deployed live checkout v7 and live webhook v7. Checkout remains source-locked. Both accept restricted live keys; requests have timeouts and webhook verification uses native HMAC verification.
 - [x] Implemented account checkout-return guidance, sensitive URL cleanup, safer text-to-CSV exports, recoverable settings/PDF errors, accurate format explanations, shop policy/support links, and currency labels.
-- [ ] Verify this commit's GitHub Actions deployment and production browser independently.
-- [ ] Stored live key validation and real Stripe-signed delivery remain separate outstanding checks. Local fixtures do not establish those.
+- [x] Code commit `2dee2d604cea384734637a636217ad3cb997ddad` deployed successfully through GitHub Actions run `41571332087`. Production Chrome verification showed USD/one-time labels and refund/license/support links. Account return guidance appeared, checkout/session parameters were removed, and signed-out users were not granted access.
+- [ ] Replace invalid `NORTHSTAR_STRIPE_LIVE_SECRET_KEY`: a temporary, token-protected, read-only Supabase diagnostic used the stored key against all three live Stripe prices; each returned HTTP 401 Unauthorized. No credential value was exposed. Diagnostic retired to an authenticated HTTP 410 stub immediately afterward. Real Stripe-signed delivery remains unverified.
 - [ ] Owner facts remain required: intended legal merchant identity, monitored support channel, and product tax treatment/registration. Keep checkout closed until those and end-to-end fulfillment are verified.
 
+
+- Deployed endpoint probes: checkout returns 503 (release lock); webhook returns 503 (live configuration invalid). Neither probe creates a charge or entitlement.
+- Post-migration security advisor: five server-only tables have RLS with no browser policies (intentional; permissions verified). Existing leaked-password protection warning remains; no paid upgrade performed.
+- Next priorities: replace the rejected live credential and verify actual Stripe delivery; confirm legal merchant identity/monitored support/tax treatment; complete signed-in purchase/download/refund checks before releasing sales.
