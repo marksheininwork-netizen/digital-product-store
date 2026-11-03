@@ -30,10 +30,15 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [x] Add the three verified Stripe Live price IDs for Email Swipe File ($9), Cleaning Business Brand Kit ($19), and Niche Template Bundle ($29) to Supabase under the exact names expected by the live functions.
 - [x] Save the enabled Stripe Live endpoint's signing secret in Supabase as `NORTHSTAR_STRIPE_LIVE_WEBHOOK_SECRET`. The credential is not present in the repository or documentation.
 - [ ] Verify signed non-payment webhook delivery and validate the existing `NORTHSTAR_STRIPE_LIVE_SECRET_KEY`. Its name is present in Supabase, but the key has not been validated.
-- [ ] Set `NORTHSTAR_LIVE_CHECKOUT_ENABLED=true` and release the source guard only after merchant, tax, customer terms, refund, payout, and support requirements are ready.
+- [ ] Set `NORTHSTAR_LIVE_CHECKOUT_ENABLED=true` and release the source guard only after tax registration/classification, checkout terms acceptance, policy URLs, refund operations, payout, support, and production webhook checks are ready.
 - [x] Confirm Stripe Live merchant readiness and set Tax Settings head office from the business address already on the verified Stripe account. Stripe reports `charges_enabled=true`, `payouts_enabled=true`, `details_submitted=true`, and no currently due requirements; Tax Settings now reports `active`.
 - [ ] Confirm tax registration obligations and add only registrations already approved with the relevant tax authorities. Stripe has no active registrations; threshold monitoring returned no locations and no computation timestamp, so it does not establish the business's tax obligations. Do not enable automatic tax or infer registration obligations without confirmed business registration and advice.
+- [ ] Classify each paid digital product for New York sales tax and confirm whether a Certificate of Authority is required. Stripe's live business address is in New York and the planned products include editable templates and software-like tools; New York treats prewritten software as taxable, including electronically delivered software. This does not by itself determine the taxability of every Northstar file. Do not enable checkout or automatic tax until the product treatment and any required registration are confirmed.
+- [x] Publish buyer-facing Terms, Privacy, Refunds, and Product License pages; add footer links; publish a 14-day no-reason refund promise and a direct support phone path. Effective date: 2026-11-02. Source: `terms.html`, `privacy.html`, `refunds.html`, `license.html`, and `PRODUCT_LICENSE.md`.
+- [ ] Set Stripe's public terms, privacy, and support URLs and require terms acceptance in live Checkout before releasing the source guard. Keep the checkout release switch off until verified.
+- [ ] Confirm the support phone is actively monitored and test a manual refund end-to-end in Stripe without creating a real purchase; the policy is published but refund operations and response coverage are not yet verified.
 - [ ] Verify the configured live webhook signing secret with a signed non-payment event; no real payment is needed for this check.
+- [x] Add required terms-of-service consent to the prepared live Checkout Session. The Stripe account's public terms and privacy URLs still need to be configured, then the hosted Checkout consent must be verified before release.
 - [ ] Add customer-facing live purchase actions only after tax, customer terms/refunds/support, and merchant verification are ready. Current shop buttons remain disabled and the checkout function remains source-locked.
 - [ ] Release live sales only after legal, payment, tax, refund, payout, and support gates are complete. The owner has authorized the live transition, but live sales are not enabled. Stripe Tax Settings is now `active`, but there are no active tax registrations; the product metadata still says `test_only`, signed webhook delivery is unverified, and the checkout release switch remains off.
 
@@ -41,9 +46,18 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [ ] Google Sign-In: OAuth credentials, redirect domains, consent, linking and mobile testing.
 - [ ] Google Docs/Sheets: secure backend Drive authorization; complete native master templates; verified purchaser-specific copy/shared access; genuine new-tab Docs/Sheets URLs.
 - [ ] Optional Microsoft Word/Excel Online account integration; existing .doc/.csv exports are not online documents.
-- [ ] Legal: Terms, Privacy, Cookies/consent where applicable, refunds, digital product license, accessibility, business identity, support, age-related requirements.
+- [ ] Legal and operations review: confirm the merchant legal name and public disclosures, applicable jurisdiction and age requirements, terms acceptance, privacy retention/rights workflow, accessibility, and tax treatment. Customer-facing Terms, Privacy, Refund, and License pages are now published; publication alone does not complete this review.
 - [ ] Stripe live mode: merchant identity, taxes, payouts, refund handling, chargebacks, production webhook and security verification.
 - [ ] Production monitoring, backups, support, email deliverability and analytics.
+
+## Customer policy release — 2026-11-02
+- [x] Replace stale privacy notice with the actual Supabase sign-in/profile, Stripe checkout/order, private-file, local browser storage, Google Fonts, and QR service data flows.
+- [x] Publish accessible footer-linked Terms, Privacy, Refunds, and Product License pages. The refund policy offers a full refund within 14 days without requiring a reason.
+- [x] Replace the broken empty-recipient mail composer with a direct business support phone link and account sign-in/download guidance. Confirm live staffing and refund handling before taking payments.
+- [x] Add regression coverage for the new policy routes, footer links, current privacy disclosures, 14-day refund terms, and continued closed live checkout.
+- [ ] Confirm the correct legal merchant name and jurisdictional disclosures for publication. Stripe identifies the account as an individual and shows the account holder's legal name at checkout/receipt; keep checkout closed until the owner confirms that this is the intended public identity.
+- [ ] Configure the Stripe account's public terms, privacy, and support URLs after the production pages are live.
+- [ ] Have a qualified adviser classify each paid item for New York sales tax and confirm whether a Certificate of Authority is required. New York's official guidance says prewritten computer software is taxable even when electronically transmitted, and taxable sellers must register before making taxable sales. Northstar's downloadable templates/products still require item-by-item classification. References: [NY computer software bulletin](https://www.tax.ny.gov/pubs_and_bulls/tg_bulletins/st/computer_software.htm), [NY register as a sales tax vendor](https://www.tax.ny.gov/bus/st/register.htm).
 
 ## Guardrails
 - Do not accept real payments until fulfillment, merchant, tax, customer terms, refunds, payouts, and support are ready.
