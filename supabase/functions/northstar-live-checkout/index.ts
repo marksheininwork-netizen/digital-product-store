@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
     cancel_url: `${site}/shop.html?checkout=cancel`,
     client_reference_id: "northstar-web",
     "metadata[sku]": sku,
+    "consent_collection[terms_of_service]": "required",
   });
 
   try {
