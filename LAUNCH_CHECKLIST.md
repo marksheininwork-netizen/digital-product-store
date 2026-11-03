@@ -118,3 +118,10 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 ## 2026-11-03 account export reliability patch
 - [x] Source fix committed as `125ae24b14e434e9c270ac85e4fb8ded81160a11`: PDF library failure now clears its loader for retry; export failures now show an inline accessible alert beside the product. Confirmed by reading back the committed `main` source.
 - [ ] Verify GitHub Actions build/test/deployment for this commit and independently test the live account page; no live-browser verification is claimed for this patch.
+
+## 2026-11-03 implementation-only release preparation
+- [x] Replace inactive premium-shop checkout buttons with links to product support or membership details. Commit `8c6375be19b6d4d88bc151675caaf7eb63e5d8aa`; real checkout remains disabled.
+- [x] Add `CUSTOMER_OPERATIONS.md` covering refund workflow, delivery support, safe entitlement handling, and a tax-classification worksheet. Commit `5751affddd13d51b690ed201ba56fa4c9f4614db`.
+- [ ] Confirm a monitored customer support channel and refund operator; the written procedure alone does not establish operational coverage.
+- [ ] Obtain merchant-specific tax classification and registrations as applicable; worksheet is not a tax determination.
+- [ ] Build, browser, and payment testing intentionally deferred for this implementation-only batch at owner's request.
