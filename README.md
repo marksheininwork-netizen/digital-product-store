@@ -32,7 +32,7 @@ The owner has authorized moving toward live sales. Keep checkout gated until leg
 ## Payment mode separation
 
 - Keep `northstar-sandbox-checkout` and `northstar-stripe-webhook` test-only.
-- `northstar-live-checkout` requires both `LIVE_SALES_RELEASED` in source and `NORTHSTAR_LIVE_CHECKOUT_ENABLED=true`; the source guard remains `false` until the missing webhook, merchant, tax, customer terms, refund, payout, and support requirements are verified. The owner has authorized the transition toward live sales.
+- `northstar-live-checkout` requires both `LIVE_SALES_RELEASED` in source and `NORTHSTAR_LIVE_CHECKOUT_ENABLED=true`; the live webhook secret is configured in Supabase, but signed delivery, merchant, tax, customer terms, refund, payout, and support requirements still need verification. The owner has authorized the transition toward live sales; the source guard remains `false` until launch readiness is established.
 - The live webhook writes to separate `livemode=true` order records and only accepts its mapped live price IDs after verifying the Stripe event, Checkout Session, paid status, amount, currency, and line item.
 - The live webhook and private-download function source are tracked in `supabase/functions/`. Live Stripe credentials and webhook secrets must remain in Supabase secrets, never in the repository.
 - The app does not offer live subscription checkout or portal access yet. Do not enable Toolbox Plus for real buyers until both access entitlements and subscription management are verified.
