@@ -17,6 +17,7 @@ test('live checkout stays closed until the explicit launch switch and live key a
 
 test('live storefront can only create one-time purchases for mapped digital goods',()=>{
   assert.match(checkout,/mode: "payment"/);
+  assert.match(checkout,/consent_collection\[terms_of_service\].*required/);
   assert.match(checkout,/NORTHSTAR_LIVE_PRICE_EMAILS/);
   assert.match(checkout,/NORTHSTAR_LIVE_PRICE_CLEANING/);
   assert.match(checkout,/NORTHSTAR_LIVE_PRICE_NICHE/);
