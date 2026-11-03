@@ -11,10 +11,13 @@ async function verifySignature(raw: string, header: string | null, secret: strin
   const signatures = parts.filter((part) => /^v1=[a-f0-9]{64}$/.test(part)).map((part) => part.slice(3));
   if (!timestamp || !signatures.length || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
 
-  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const digest = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(`${timestamp}.${raw}`)));
-  const hex = Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join("");
-  return signatures.some((signature) => signature === hex);
+  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+  const payload = encoder.encode(`${timestamp}.${raw}`);
+  for (const signature of signatures) {
+    const bytes = Uint8Array.from(signature.match(/.{2}/g)!, (byte) => parseInt(byte, 16));
+    if (await crypto.subtle.verify("HMAC", key, bytes, payload)) return true;
+  }
+  return false;
 }
 
 const prices: Array<{ secret: string; amount: number; file: string }> = [
@@ -30,7 +33,7 @@ Deno.serve(async (req) => {
   const signingSecret = Deno.env.get("NORTHSTAR_STRIPE_LIVE_WEBHOOK_SECRET") || "";
   const base = Deno.env.get("SUPABASE_URL") || "";
   const admin = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-  if (!key.startsWith("sk_live_") || !signingSecret.startsWith("whsec_") || !base || !admin) {
+  if (!/^(sk|rk)_live_[A-Za-z0-9]+$/.test(key) || !signingSecret.startsWith("whsec_") || !base || !admin) {
     return reply({ error: "Live webhook not configured" }, 503);
   }
 
@@ -40,10 +43,10 @@ Deno.serve(async (req) => {
   }
   let event: any;
   try { event = JSON.parse(raw); } catch { return reply({ error: "Invalid JSON" }, 400); }
-  if (event.livemode !== true || !event.id) return reply({ error: "Live events only" }, 400);
+  if (!event || event.livemode !== true || typeof event.id !== "string" || !event.id.startsWith("evt_")) return reply({ error: "Live events only" }, 400);
 
   const stripe = async (path: string) => {
-    const response = await fetch(`https://api.stripe.com/v1${path}`, { headers: { authorization: `Bearer ${key}` } });
+    const response = await fetch(`https://api.stripe.com/v1${path}`, { headers: { authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(15000) });
     if (!response.ok) throw new Error(`Stripe lookup ${response.status}`);
     return response.json();
   };
@@ -52,6 +55,7 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: { apikey: admin, authorization: `Bearer ${admin}`, "content-type": "application/json" },
       body: JSON.stringify(args),
+      signal: AbortSignal.timeout(15000),
     });
     if (!response.ok) throw new Error(`Database RPC ${name} ${response.status}`);
     return response.json();
@@ -62,7 +66,7 @@ Deno.serve(async (req) => {
     if (["checkout.session.completed", "checkout.session.async_payment_succeeded"].includes(event.type)
       && object.mode === "payment" && object.payment_status === "paid") {
       const session = await stripe(`/checkout/sessions/${encodeURIComponent(object.id)}`);
-      if (session.livemode !== true || session.payment_status !== "paid" || session.currency !== "usd") {
+      if (session.livemode !== true || session.mode !== "payment" || session.status !== "complete" || session.payment_status !== "paid" || session.currency !== "usd") {
         throw new Error("Invalid paid session");
       }
       const lines = await stripe(`/checkout/sessions/${encodeURIComponent(object.id)}/line_items?limit=2`);
@@ -70,7 +74,35 @@ Deno.serve(async (req) => {
 
       const priceId = lines.data[0].price?.id;
       const product = prices.find((item) => Deno.env.get(item.secret) === priceId);
-      if (!product || session.amount_total !== product.amount) throw new Error("Unmapped live price or amount");
+      const line = lines.data[0];
+      // Check the catalog price independently of tax. Discounts and shipping are
+      // not part of this digital-only catalog. Tax is not enabled by this handler.
+      const tax = session.total_details?.amount_tax;
+      if (!product || line.price?.currency !== "usd" || line.price?.unit_amount !== product.amount
+        || line.amount_subtotal !== product.amount || session.amount_subtotal !== product.amount
+        || session.total_details?.amount_discount !== 0 || session.total_details?.amount_shipping !== 0
+        || !Number.isSafeInteger(tax) || tax < 0 || !Number.isSafeInteger(session.amount_total)
+        || session.amount_total !== product.amount + (line.price?.tax_behavior === "inclusive" ? 0 : tax)) {
+        throw new Error("Unmapped live price or amount");
+      }
+      if (typeof session.payment_intent !== "string" || !session.payment_intent.startsWith("pi_")) {
+        throw new Error("Missing payment reference");
+      }
+      const intent = await stripe(`/payment_intents/${encodeURIComponent(session.payment_intent)}?expand[]=latest_charge`);
+      const charge = intent.latest_charge;
+      if (intent.livemode !== true || intent.status !== "succeeded" || intent.currency !== "usd"
+        || intent.amount_received !== session.amount_total || !charge || typeof charge !== "object") {
+        throw new Error("Payment is not settled");
+      }
+      // Requires migration 20261103031415 (live reversal ordering) before deployment.
+      // Record the reversal first, even if no order exists yet. The database
+      // serializes fulfillment and reversals for this payment and preserves it.
+      if (charge.refunded === true || charge.disputed === true) {
+        await rpc("northstar_record_live_payment_reversal", {
+          p_event_id: `${event.id}:reversal`, p_payment_intent: session.payment_intent,
+          p_status: charge.refunded === true ? "refunded" : "disputed",
+        });
+      }
       const email = session.customer_details?.email || session.customer_email;
       if (!email) throw new Error("Missing customer email");
 

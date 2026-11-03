@@ -99,3 +99,14 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [ ] The three intended one-time Stripe Live products remain tagged `status=test_only`; correct metadata and verify fulfillment only after tax and identity gates are resolved. Toolbox Plus subscriptions remain excluded.
 - [ ] Verify a monitored customer support channel, refund operations, and the correct legal merchant identity/public disclosures before accepting payment. Stripe account has no customer support email; support-phone monitoring is unverified.
 - [ ] Release live checkout only after every preceding gate is evidenced. The source release guard remains false and no real charge has been made.
+
+## Tested payment hardening — 2026-11-02
+- [x] Local regression suite passes 31/31, including runtime tests of signed webhooks, stale/absent signatures, sandbox rejection, restricted live keys, tax totals, reversed charges, database failure, and source-locked checkout. Vite production build passed.
+- [x] Applied Supabase migration `20261103031415_northstar_live_reversal_ordering`. A durable reversal ledger and per-payment transaction locks preserve refunds/disputes across delayed or duplicate checkout events.
+- [x] Database assertions passed for refund-before-order, duplicate event/item, late completion, disputed order, refund precedence, and browser-role permission denial. Synthetic records were rolled back; no real payment was made.
+- [x] Deployed live checkout v7 and live webhook v7. Checkout remains source-locked. Both accept restricted live keys; requests have timeouts and webhook verification uses native HMAC verification.
+- [x] Implemented account checkout-return guidance, sensitive URL cleanup, safer text-to-CSV exports, recoverable settings/PDF errors, accurate format explanations, shop policy/support links, and currency labels.
+- [ ] Verify this commit's GitHub Actions deployment and production browser independently.
+- [ ] Stored live key validation and real Stripe-signed delivery remain separate outstanding checks. Local fixtures do not establish those.
+- [ ] Owner facts remain required: intended legal merchant identity, monitored support channel, and product tax treatment/registration. Keep checkout closed until those and end-to-end fulfillment are verified.
+

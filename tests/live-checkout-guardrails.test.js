@@ -11,7 +11,7 @@ test('live checkout stays closed until the explicit launch switch and live key a
   const flag=checkout.indexOf('NORTHSTAR_LIVE_CHECKOUT_ENABLED')<checkout.indexOf('https://api.stripe.com/v1/checkout/sessions');
   assert.ok(flag,'the purchase switch must be checked before creating a Stripe session');
   assert.match(checkout,/const LIVE_SALES_RELEASED = false/);
-  assert.match(checkout,/key\.startsWith\("sk_live_"\)/);
+  assert.ok(checkout.includes("/^(sk|rk)_live_[A-Za-z0-9]+$/"));
   assert.match(checkout,/data\.livemode !== true/);
 });
 
@@ -29,7 +29,7 @@ test('live webhook verifies a live signature and records only validated paid ses
   assert.match(webhook,/stripe-signature/);
   assert.match(webhook,/verifySignature\(raw/);
   assert.match(webhook,/event\.livemode !== true/);
-  assert.match(webhook,/key\.startsWith\("sk_live_"\)/);
+  assert.ok(webhook.includes("/^(sk|rk)_live_[A-Za-z0-9]+$/"));
   assert.match(webhook,/payment_status !== "paid"/);
   assert.match(webhook,/northstar_record_live_paid_checkout/);
   assert.match(webhook,/northstar_record_live_payment_reversal/);

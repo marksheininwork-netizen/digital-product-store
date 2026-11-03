@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
   }
 
   const key = Deno.env.get("NORTHSTAR_STRIPE_LIVE_SECRET_KEY") || "";
-  if (!key.startsWith("sk_live_")) return reply({ error: "Live payments are not configured" }, 503);
+  if (!/^(sk|rk)_live_[A-Za-z0-9]+$/.test(key)) return reply({ error: "Live payments are not configured" }, 503);
 
   let sku: unknown;
   try { sku = (await req.json()).sku; } catch { return reply({ error: "Invalid request" }, 400); }
@@ -56,10 +56,15 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: { authorization: `Bearer ${key}`, "content-type": "application/x-www-form-urlencoded" },
       body: params,
+      signal: AbortSignal.timeout(15000),
     });
     const data = await response.json();
-    if (!response.ok || !data.url || data.livemode !== true) return reply({ error: "Checkout unavailable" }, 502);
-    return reply({ url: data.url });
+    if (!response.ok || typeof data.url !== "string" || data.livemode !== true) return reply({ error: "Checkout unavailable" }, 502);
+    const checkoutUrl = new URL(data.url);
+    if (checkoutUrl.protocol !== "https:" || checkoutUrl.hostname !== "checkout.stripe.com" || checkoutUrl.username || checkoutUrl.password) {
+      return reply({ error: "Checkout unavailable" }, 502);
+    }
+    return reply({ url: checkoutUrl.href });
   } catch {
     return reply({ error: "Checkout unavailable" }, 503);
   }
