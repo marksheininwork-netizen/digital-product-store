@@ -39,6 +39,7 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [ ] Confirm the support phone is actively monitored and test a manual refund end-to-end in Stripe without creating a real purchase; the policy is published but refund operations and response coverage are not yet verified.
 - [ ] Verify the configured live webhook signing secret with a signed non-payment event; no real payment is needed for this check.
 - [x] Add required terms-of-service consent to the prepared live Checkout Session. The Stripe account's public terms and privacy URLs still need to be configured, then the hosted Checkout consent must be verified before release.
+- [x] Deploy the prepared live Checkout source with required terms acceptance to Supabase Edge Function version 6. `LIVE_SALES_RELEASED` remains `false`; the live checkout enable switch remains off, so this deployment does not enable purchases.
 - [ ] Add customer-facing live purchase actions only after tax, customer terms/refunds/support, and merchant verification are ready. Current shop buttons remain disabled and the checkout function remains source-locked.
 - [ ] Release live sales only after legal, payment, tax, refund, payout, and support gates are complete. The owner has authorized the live transition, but live sales are not enabled. Stripe Tax Settings is now `active`, but there are no active tax registrations; the product metadata still says `test_only`, signed webhook delivery is unverified, and the checkout release switch remains off.
 
