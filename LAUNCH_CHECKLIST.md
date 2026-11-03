@@ -87,3 +87,15 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - Independent production-browser check at `https://northstar.atlaspointdigital.com/account.html?release=0712759` showed the updated order-history wording and the signed-out account portal; the page still clearly says test purchases only while real checkout remains locked.
 
 - Latest live-readiness check on 2026-11-02: Stripe account requirements show no currently due fields and Tax Settings is `active`, but the live registrations list is empty and threshold monitoring returned no locations with `computed_at: null`. Stripe's public Terms, Privacy, and support URLs are now configured. Automatic tax and checkout remain off; hosted terms-consent, signed webhook delivery, product tax classification/registration, support coverage, and legal merchant identity remain unresolved.
+
+
+## Production fixes and renewed readiness check — 2026-11-02
+- [x] In the owner's existing Chrome tab, the live `/shop.html` route returned a GitHub Pages 404. Root cause: Vite's multi-page input list omitted `shop`. Added the page to the production build.
+- [x] Removed the unconfirmed `Seller: Maria Sheinin` statement from the membership page. Stripe's verified live account is registered as an individual under a different legal name; the public page now says seller identity and required disclosures must be confirmed before paid checkout opens.
+- [x] Regression test covers the published shop route and prevents either unconfirmed seller name from reappearing. Local verification: `npm test` (19/19) and `npm run build` passed.
+- [x] Published main commit `02c7345ba3881138a151618b2345417d5d634f0d`; GitHub Actions run `41569589421` succeeded, including tests, production build and Pages deployment. In the same open Chrome tab, verified `/shop.html` now loads and all purchase controls remain disabled; verified the membership disclosure was updated. No payment was created.
+- [ ] Keep real checkout closed. Stripe Live has no active tax registrations; threshold monitoring returned no data and no computation timestamp. Product-by-product New York classification and any registration decision remain unresolved.
+- [ ] Live webhook endpoint is enabled, but Stripe reports zero deliveries. The secret name exists in Supabase but the live API key and signed live delivery still need validation.
+- [ ] The three intended one-time Stripe Live products remain tagged `status=test_only`; correct metadata and verify fulfillment only after tax and identity gates are resolved. Toolbox Plus subscriptions remain excluded.
+- [ ] Verify a monitored customer support channel, refund operations, and the correct legal merchant identity/public disclosures before accepting payment. Stripe account has no customer support email; support-phone monitoring is unverified.
+- [ ] Release live checkout only after every preceding gate is evidenced. The source release guard remains false and no real charge has been made.
