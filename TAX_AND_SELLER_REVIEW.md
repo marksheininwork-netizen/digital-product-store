@@ -36,3 +36,23 @@ Updated 2026-11-03. Planning document only; not legal/tax advice or a tax-exempt
 - [ ] Verify Alexander's seller/payment-account authority, business name presentation and required disclosures.
 - [ ] Finalize customer-facing legal policies, refund/support process and sales records.
 - [ ] Validate live Stripe webhook/fulfillment/refund controls; then separately authorize live launch.
+
+## Evidence gathered 2026-11-03 (read-only audit)
+
+Private Supabase Storage bucket `northstar-private-products` currently contains:
+- `email-swipe-file.txt`: text/plain, 20,208 bytes.
+- `cleaning-business-brand-kit.txt`: text/plain, 11,200 bytes.
+- `niche-template-bundle.zip`: application/zip, 17,121 bytes.
+
+**Limitation:** These are metadata checks, not an inspection of private file contents. The ZIP contents remain unknown. Do not classify any SKU as exempt on file extension alone.
+
+The public repository also contains `email-swipe-file.html`, an interactive free tool advertising 50 editable email starters, and `cleaning-business-brand-kit.html`, an interactive free starter kit. These may overlap paid products. Before activating checkout, confirm that paid listings accurately distinguish the delivered files from the free versions, with no misleading exclusivity or value claims.
+
+Stripe live merchant account was identified as Alexander Tsudikman; its existence does not establish the legally correct seller identity, authority to operate, or tax exemption. Existing live catalog and checkout settings were already prepared in prior work; **no new charges or release toggles were made during this audit**.
+
+New York's official software bulletin was updated October 16, 2026 and states prewritten software can be taxable when delivered electronically or by remote access: https://www.tax.ny.gov/pubs_and_bulls/tg_bulletins/st/computer_software.htm . New York's registration bulletin says taxable sales generally require a Certificate of Authority before sales begin: https://www.tax.ny.gov/pubs_and_bulls/tg_bulletins/st/do_i_need_to_register_for_sales_tax.htm .
+
+## Additional release gate
+- [ ] Compare actual paid TXT and ZIP contents with free public tools; correct marketing copy or improve paid bundles as needed.
+- [ ] Verify actual delivered content before assigning Stripe tax codes; never label all downloads nontaxable by default.
+- [ ] Review state-specific nexus and sales tax requirements for intended customer locations, not just New York.
