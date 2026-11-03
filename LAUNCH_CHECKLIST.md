@@ -125,3 +125,11 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [ ] Confirm a monitored customer support channel and refund operator; the written procedure alone does not establish operational coverage.
 - [ ] Obtain merchant-specific tax classification and registrations as applicable; worksheet is not a tax determination.
 - [ ] Build, browser, and payment testing intentionally deferred for this implementation-only batch at owner's request.
+
+## 2026-11-03 follow-up verification
+- [x] Confirm the Stripe test-store subscription checkout is paused in current `main` source: a noninteractive status element replaces the old subscription payment link; one-time sandbox links remain. This is a source verification, not proof of production deployment.
+- [x] Confirm the three private product objects still exist in Supabase Storage with expected names and MIME types; private file contents and ZIP entries were not read, so tax classification remains open.
+- [x] Confirm Supabase live checkout and webhook functions remain deployed; deployment presence alone does not prove working credentials or webhook delivery.
+- [ ] Verify GitHub Actions build and production deployment for the subscription pause and latest storefront text.
+- [ ] Resolve live Stripe secret-key authentication failure, then test signed non-payment webhook and sandbox delivery/refund without live charges.
+- [ ] Verify paid file contents and distinguish them clearly from the free interactive tools; get product-specific tax treatment before any live launch.
