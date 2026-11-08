@@ -31,19 +31,28 @@ test('live webhook verifies signatures and excludes sandbox events', () => {
   assert.match(webhook, /northstar_record_live_payment_reversal/);
 });
 
-test('sandbox store labels links as test-only and pauses membership', () => {
+test('sandbox store uses Maria sandbox checkout and pauses membership', () => {
   assert.match(store, /Not a live store/);
-  assert.match(store, /Subscription checkout paused/);
-  assert.match(store, /Test checkout paused — new merchant pending/);
+  assert.match(store, /Maria Sheinin's Stripe account in test mode/);
+  assert.match(store, /Membership checkout remains paused/);
   assert.doesNotMatch(store, /href="https:\/\/buy\.stripe\.com\//);
-  assert.doesNotMatch(store, /href="https:\/\/buy\.stripe\.com\/(?!test_)/);
+  assert.doesNotMatch(store, /Alexander Tsudikman/);
 });
 
-test('Maria Sheinin is the intended seller and previous seller is absent from public pages', () => {
+test('sandbox storefront keeps legal seller identity unconfirmed', () => {
+  assert.match(store, /does not establish who may legally sell the products/);
+  assert.match(store, /Confirm the legal seller, business details/);
+  assert.doesNotMatch(store, /Maria Sheinin is the legal seller/);
   for (const page of [store, shop, pages, membership, account]) {
-    assert.match(page, /Maria Sheinin/);
     assert.doesNotMatch(page, /Alexander Tsudikman/);
   }
-  assert.match(store, /Paid checkout remains disabled/);
   assert.match(shop, /Purchases are temporarily unavailable/);
+});
+
+
+test('future checkout requires US address and Stripe automatic tax before payment', () => {
+  assert.ok(checkout.includes('"shipping_address_collection[allowed_countries][0]": "US"'));
+  assert.ok(checkout.includes('"billing_address_collection": "required"'));
+  assert.ok(checkout.includes('"automatic_tax[enabled]": "true"'));
+  assert.match(checkout, /const LIVE_SALES_RELEASED = false;/);
 });

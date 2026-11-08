@@ -44,6 +44,11 @@ Deno.serve(async (req) => {
     mode: "payment",
     "line_items[0][price]": price,
     "line_items[0][quantity]": "1",
+    // Stripe enforces this country restriction at hosted Checkout, not in browser code.
+    // For digital products this collects a US delivery address as an eligibility gate.
+    "shipping_address_collection[allowed_countries][0]": "US",
+    "billing_address_collection": "required",
+    "automatic_tax[enabled]": "true",
     success_url: `${site}/account.html?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${site}/shop.html?checkout=cancel`,
     client_reference_id: "northstar-web",
