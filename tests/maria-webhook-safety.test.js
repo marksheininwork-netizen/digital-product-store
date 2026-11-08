@@ -13,8 +13,8 @@ test('Maria webhook only accepts signed test-mode events', () => {
   assert.doesNotMatch(webhook, /NORTHSTAR_STRIPE_TEST_SECRET_KEY|STRIPE_WEBHOOK_SECRET|(?:sk|rk)_live_/);
 });
 test('checkout and webhook accept restricted sandbox keys but reject live keys', () => {
-  assert.match(checkout, /\\(\\?:sk\\|rk\\)_test_/);
-  assert.match(webhook, /\\(\\?:sk\\|rk\\)_test_/);
+  assert.ok(checkout.includes("(?:sk|rk)_test_"));
+  assert.ok(webhook.includes("(?:sk|rk)_test_"));
   assert.doesNotMatch(checkout + webhook, /(?:sk|rk)_live_/);
 });
 test('paid checkout verifies merchant-specific reference, product and payment status', () => {
