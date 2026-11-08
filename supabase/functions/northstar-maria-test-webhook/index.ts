@@ -72,14 +72,14 @@ Deno.serve(async req => {
     }
     if (event.type === "charge.refunded" && obj.refunded === true && obj.payment_intent) {
       const charge = await stripe("/charges/" + encodeURIComponent(obj.id));
-      if (charge.livemode !== false || charge.payment_intent !== obj.payment_intent) throw Error("Invalid charge");
+      if (charge.livemode !== false || charge.payment_intent !== obj.payment_intent || charge.refunded !== true) throw Error("Invalid charge");
       return response({ received: true, applied: await rpc("northstar_record_payment_reversal", {
         p_event_id: event.id, p_payment_intent: obj.payment_intent, p_status: "refunded",
       }) });
     }
     if (event.type === "charge.dispute.created" && obj.charge) {
       const charge = await stripe("/charges/" + encodeURIComponent(obj.charge));
-      if (charge.livemode !== false || !charge.payment_intent || charge.disputed !== true) throw Error("Invalid dispute");
+      if (charge.livemode !== false || !charge.payment_intent || charge.disputed !== true || obj.id !== charge.dispute) throw Error("Invalid dispute");
       return response({ received: true, applied: await rpc("northstar_record_payment_reversal", {
         p_event_id: event.id, p_payment_intent: charge.payment_intent, p_status: "disputed",
       }) });
