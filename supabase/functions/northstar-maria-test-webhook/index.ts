@@ -1,4 +1,5 @@
-// Maria-only Stripe test webhook. Draft: do not deploy until Maria's webhook signing secret is configured.
+// Isolated Maria test-mode Stripe webhook. Verifies signatures, merchant test mode, and exact purchase details.
+import { isQualifyingRefund } from "./refund-qualifier.js";
 const enc = new TextEncoder();
 const response = (data: unknown, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { "content-type": "application/json", "cache-control": "no-store" },
@@ -10,7 +11,7 @@ const catalog: Record<string, { amount: number; file: string }> = {
 };
 async function verify(raw: string, header: string, secret: string) {
   const parts = header.split(",").map(x => x.trim());
-  const timestamp = parts.find(x => /^t=\d+$/.test(x))?.slice(2);
+  const timestamp = parts.find(x => /^t=\\d+$/.test(x))?.slice(2);
   const signatures = parts.filter(x => /^v1=[a-f0-9]{64}$/.test(x)).map(x => x.slice(3));
   if (!timestamp || !signatures.length || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
   const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
@@ -74,11 +75,11 @@ Deno.serve(async req => {
       });
       return response({ received: true, applied });
     }
-    if (event.type === "charge.refunded" && obj.refunded === true && obj.payment_intent) {
+    if (event.type === "charge.refunded" && obj.amount_refunded > 0 && obj.payment_intent) {
       const charge = await stripe("/charges/" + encodeURIComponent(obj.id));
-      if (charge.livemode !== false || charge.payment_intent !== obj.payment_intent || charge.refunded !== true) throw Error("Invalid charge");
+      if (!isQualifyingRefund(obj, charge)) throw Error("Invalid charge refund");
       return response({ received: true, applied: await rpc("northstar_record_payment_reversal", {
-        p_event_id: event.id, p_payment_intent: obj.payment_intent, p_status: "refunded",
+        p_event_id: event.id, p_payment_intent: charge.payment_intent, p_status: "refunded",
       }) });
     }
     if (event.type === "charge.dispute.created" && obj.charge) {
