@@ -17,6 +17,7 @@ begin
   if p_status not in ('refunded','disputed') or coalesce(p_payment_intent,'') = '' then
     raise exception 'Invalid reversal';
   end if;
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_payment_intent, 0));
   insert into public.northstar_stripe_events(event_id,event_type)
     values (p_event_id,p_status) on conflict do nothing;
   if not found then return false; end if;
