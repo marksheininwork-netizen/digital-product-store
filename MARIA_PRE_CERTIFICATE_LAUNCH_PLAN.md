@@ -12,6 +12,12 @@
 - Shop remains unavailable; no payment collection should occur from the public shop.
 - Regression checks cover seller identity, disabled Stripe links, and the hard-coded live checkout release lock.
 
+## Latest owner update (2026-11-08)
+- User reports that Maria's Stripe account information has been updated; **independently unverified**. Identity verification is still pending. Do not mark the merchant transfer, bank ownership, or account capabilities as verified based on this report alone.
+- Connected Supabase check: 3 recorded sandbox orders and **0 recorded live orders** at the time of inspection. This is a database observation, not a full Stripe payment audit.
+- Connected Supabase reports live-checkout and live-webhook functions ACTIVE; this is not proof that production checkout, tax, or fulfillment works end to end.
+- **Next safe work:** inspect files, validate support and policies, check deployment and automated tests, prepare a merchant-specific migration plan, and keep payment creation locked. Do not move old Stripe prices/secrets or deploy live payment changes until the correct Maria account is confirmed.
+
 ## Steps before the certificate application
 - [ ] Maria personally confirms she will genuinely own the business and authorizes operations and customer support.
 - [ ] Maria creates/obtains a Stripe account in her own legal name, or Stripe explicitly confirms and completes a supported legal-owner transfer. **Do not reuse old live/test secrets, prices, webhook signing secrets, or payout accounts as if they belong to Maria.**
