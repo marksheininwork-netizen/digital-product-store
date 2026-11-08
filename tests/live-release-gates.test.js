@@ -5,6 +5,10 @@ import { readFileSync } from 'node:fs';
 const checkout = readFileSync(new URL('../supabase/functions/northstar-live-checkout/index.ts', import.meta.url), 'utf8');
 const webhook = readFileSync(new URL('../supabase/functions/northstar-live-webhook/index.ts', import.meta.url), 'utf8');
 const store = readFileSync(new URL('../stripe-test-store.html', import.meta.url), 'utf8');
+const shop = readFileSync(new URL('../shop.html', import.meta.url), 'utf8');
+const pages = readFileSync(new URL('../pages.js', import.meta.url), 'utf8');
+const membership = readFileSync(new URL('../membership.html', import.meta.url), 'utf8');
+const account = readFileSync(new URL('../account.html', import.meta.url), 'utf8');
 
 test('live checkout remains fail-closed pending release approval', () => {
   assert.match(checkout, /const LIVE_SALES_RELEASED = false;/);
@@ -31,4 +35,13 @@ test('sandbox store labels links as test-only and pauses membership', () => {
   assert.match(store, /Not a live store/);
   assert.match(store, /Subscription checkout paused/);
   assert.doesNotMatch(store, /href="https:\/\/buy\.stripe\.com\/(?!test_)/);
+});
+
+test('Maria Sheinin is the intended seller and previous seller is absent from public pages', () => {
+  for (const page of [store, shop, pages, membership, account]) {
+    assert.match(page, /Maria Sheinin/);
+    assert.doesNotMatch(page, /Alexander Tsudikman/);
+  }
+  assert.match(store, /Paid checkout remains disabled/);
+  assert.match(shop, /Purchases are temporarily unavailable/);
 });
