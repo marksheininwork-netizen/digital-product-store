@@ -15,7 +15,12 @@ async function verify(raw: string, header: string, secret: string) {
   if (!timestamp || !signatures.length || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
   const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const digest = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(timestamp + "." + raw)));
-    return signatures.some(x => {\n    const bytes = new Uint8Array(x.match(/../g)!.map(h => parseInt(h, 16)));\n    let diff = 0;\n    for (let i = 0; i < digest.length; i++) diff |= bytes[i] ^ digest[i];\n    return diff === 0;\n  });
+  return signatures.some(x => {
+    const bytes = new Uint8Array(x.match(/../g)!.map(h => parseInt(h, 16)));
+    let diff = 0;
+    for (let i = 0; i < digest.length; i++) diff |= bytes[i] ^ digest[i];
+    return diff === 0;
+  });
 }
 Deno.serve(async req => {
   if (req.method !== "POST") return response({ error: "Method not allowed" }, 405);
