@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return reply({ error: "Method not allowed" }, 405);
   if (req.headers.get("origin") !== site) return reply({ error: "Origin not allowed" }, 403);
   const key = Deno.env.get("NORTHSTAR_MARIA_TEST_STRIPE_SECRET_KEY") || "";
-  if (!/^sk_test_[A-Za-z0-9]+$/.test(key)) return reply({ error: "Maria sandbox not configured" }, 503);
+  if (!/^(?:sk|rk)_test_[A-Za-z0-9]+$/.test(key)) return reply({ error: "Maria sandbox not configured" }, 503);
   let sku: unknown;
   try { sku = (await req.json()).sku; } catch { return reply({ error: "Invalid request" }, 400); }
   if (typeof sku !== "string" || !Object.prototype.hasOwnProperty.call(catalog, sku)) return reply({ error: "Unknown product" }, 400);
