@@ -43,7 +43,10 @@ create or replace function public.northstar_record_paid_checkout(
 as $function$
 declare v_id uuid; v_status text;
 begin
-  if coalesce(p_payment_intent,'') = '' or coalesce(p_session_id,'') = '' or\n     coalesce(p_email,'') = '' or coalesce(p_price,'') = '' or coalesce(p_file,'') = '' then\n    raise exception 'Incomplete paid checkout';\n  end if;
+  if coalesce(p_payment_intent,'') = '' or coalesce(p_session_id,'') = '' or
+     coalesce(p_email,'') = '' or coalesce(p_price,'') = '' or coalesce(p_file,'') = '' then
+    raise exception 'Incomplete paid checkout';
+  end if;
   -- Serialize checkout and reversal updates for the same payment intent.
   perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_payment_intent, 0));
   insert into public.northstar_stripe_events(event_id,event_type)
