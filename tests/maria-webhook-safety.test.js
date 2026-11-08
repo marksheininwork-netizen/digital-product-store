@@ -3,13 +3,19 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { isQualifyingRefund } from '../supabase/functions/northstar-maria-test-webhook/refund-qualifier.js';
 const webhook = readFileSync(new URL('../supabase/functions/northstar-maria-test-webhook/index.ts', import.meta.url), 'utf8');
+const checkout = readFileSync(new URL('../supabase/functions/northstar-maria-test-checkout/index.ts', import.meta.url), 'utf8');
 test('Maria webhook only accepts signed test-mode events', () => {
   assert.match(webhook, /NORTHSTAR_MARIA_TEST_WEBHOOK_SECRET/);
   assert.match(webhook, /NORTHSTAR_MARIA_TEST_STRIPE_SECRET_KEY/);
   assert.match(webhook, /crypto\.subtle\.sign/);
   assert.match(webhook, /stripe-signature/);
   assert.match(webhook, /event\.livemode !== false/);
-  assert.doesNotMatch(webhook, /NORTHSTAR_STRIPE_TEST_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_live_/);
+  assert.doesNotMatch(webhook, /NORTHSTAR_STRIPE_TEST_SECRET_KEY|STRIPE_WEBHOOK_SECRET|(?:sk|rk)_live_/);
+});
+test('checkout and webhook accept restricted sandbox keys but reject live keys', () => {
+  assert.match(checkout, /\\(\\?:sk\\|rk\\)_test_/);
+  assert.match(webhook, /\\(\\?:sk\\|rk\\)_test_/);
+  assert.doesNotMatch(checkout + webhook, /(?:sk|rk)_live_/);
 });
 test('paid checkout verifies merchant-specific reference, product and payment status', () => {
   assert.match(webhook, /northstar-maria-test/);
