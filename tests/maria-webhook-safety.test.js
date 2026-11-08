@@ -16,7 +16,7 @@ test('paid checkout verifies merchant-specific reference, product and payment st
   assert.match(webhook, /session\.livemode !== false/);
   assert.match(webhook, /lines\.data\?\.length !== 1/);
   assert.match(webhook, /session\.amount_subtotal !== item\.amount/);
-  assert.match(webhook, /northstar_record_paid_checkout/);
+  assert.match(webhook, /northstar_record_paid_checkout/);\n  assert.match(webhook, /session\\.amount_total !== item\\.amount/);
 });
 test('refund and dispute events require a verified Stripe charge', () => {
   assert.match(webhook, /charge\.refunded/);
