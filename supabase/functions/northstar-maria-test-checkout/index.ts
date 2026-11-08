@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
   if (!/^sk_test_[A-Za-z0-9]+$/.test(key)) return reply({ error: "Maria sandbox not configured" }, 503);
   let sku: unknown;
   try { sku = (await req.json()).sku; } catch { return reply({ error: "Invalid request" }, 400); }
-  if (typeof sku !== "string" || !Object.hasOwn(catalog, sku)) return reply({ error: "Unknown product" }, 400);
+  if (typeof sku !== "string" || !Object.prototype.hasOwnProperty.call(catalog, sku)) return reply({ error: "Unknown product" }, 400);
   const params = new URLSearchParams({
     mode: "payment",
     "line_items[0][price]": catalog[sku].price,
@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       signal: AbortSignal.timeout(15000),
     });
     const session = await response.json();
-    if (!response.ok || session.livemode !== false || typeof session.url !== "string") return reply({ error: "Test checkout unavailable" }, 502);
+    if (!response.ok || session.livemode !== false || session.mode !== "payment" || session.client_reference_id !== "northstar-maria-test" || typeof session.url !== "string") return reply({ error: "Test checkout unavailable" }, 502);
     const url = new URL(session.url);
     if (url.protocol !== "https:" || url.hostname !== "checkout.stripe.com") return reply({ error: "Unexpected checkout URL" }, 502);
     return reply({ url: url.href, test_mode: true });
