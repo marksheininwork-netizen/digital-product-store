@@ -11,7 +11,7 @@ const catalog: Record<string, { amount: number; file: string }> = {
 };
 async function verify(raw: string, header: string, secret: string) {
   const parts = header.split(",").map(x => x.trim());
-  const timestamp = parts.find(x => /^t=\\d+$/.test(x))?.slice(2);
+  const timestamp = parts.find(x => /^t=\d+$/.test(x))?.slice(2);
   const signatures = parts.filter(x => /^v1=[a-f0-9]{64}$/.test(x)).map(x => x.slice(3));
   if (!timestamp || !signatures.length || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
   const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
