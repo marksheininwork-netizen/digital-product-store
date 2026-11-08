@@ -47,3 +47,11 @@ test('Maria Sheinin is the intended seller and previous seller is absent from pu
   assert.match(store, /Paid checkout remains disabled/);
   assert.match(shop, /Purchases are temporarily unavailable/);
 });
+
+
+test('future checkout requires US address and Stripe automatic tax before payment', () => {
+  assert.match(checkout, /shipping_address_collection\\[allowed_countries\\]\\[0\\]": "US"/);
+  assert.match(checkout, /billing_address_collection": "required"/);
+  assert.match(checkout, /automatic_tax\\[enabled\\]": "true"/);
+  assert.match(checkout, /const LIVE_SALES_RELEASED = false;/);
+});
