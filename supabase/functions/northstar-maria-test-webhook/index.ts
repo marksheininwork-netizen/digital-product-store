@@ -60,7 +60,7 @@ Deno.serve(async req => {
       const item = catalog[lines.data[0].price?.id];
       if (!item || lines.data[0].price?.unit_amount !== item.amount ||
           session.currency !== "usd" || session.amount_subtotal !== item.amount ||
-          session.amount_total < item.amount || session.amount_total > item.amount * 2) throw Error("Unexpected product or amount");
+          session.amount_total !== item.amount) throw Error("Unexpected product or amount");
       const email = session.customer_details?.email || session.customer_email;
       if (!email) throw Error("Missing buyer email");
       const applied = await rpc("northstar_record_paid_checkout", {
