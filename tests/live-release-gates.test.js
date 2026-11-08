@@ -34,6 +34,8 @@ test('live webhook verifies signatures and excludes sandbox events', () => {
 test('sandbox store labels links as test-only and pauses membership', () => {
   assert.match(store, /Not a live store/);
   assert.match(store, /Subscription checkout paused/);
+  assert.match(store, /Test checkout paused — new merchant pending/);
+  assert.doesNotMatch(store, /href="https:\/\/buy\.stripe\.com\//);
   assert.doesNotMatch(store, /href="https:\/\/buy\.stripe\.com\/(?!test_)/);
 });
 
