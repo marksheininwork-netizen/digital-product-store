@@ -1,53 +1,38 @@
 # Northstar Studio — verified prelaunch audit (2026-11-08)
 
-**Release status: BLOCKED.** No live checkout activation, tax registration, payment collection, or deployment authorized by this audit.
+**Release status: BLOCKED.** Live checkout remains disabled. The draft PR is not merged or published.
 
-## Verified via connected systems
+## Verified
 
-- GitHub Actions run 42508676444 on commit 34ed29f798cda21538266c6fa3bf5e38b7139c90: **success**; tests and storefront build completed.
-- Supabase project `hwsavnkammbhgizltqrc`: three paid **sandbox** orders; zero live orders.
-- Storage bucket `northstar-private-products`: `public=false`, three objects (`email-swipe-file.txt`, `cleaning-business-brand-kit.txt`, `niche-template-bundle.zip`). Object presence does not establish content correctness.
-- Five payment-recording SQL functions have `anon_execute=false`, `authenticated_execute=false`, and `service_execute=true`.
-- Supabase health and performance advisors: no reported lints. Security advisor: leaked-password protection disabled; five payment tables have RLS enabled without policies. These tables are intentionally server-only; do not add permissive policies merely to silence a lint.
-- Stripe connected accounts: Maria Sheinin is the live account; Alexander Tsudikman is the separate sandbox account. **Do not treat Alexander's sandbox transactions as a test of Maria's merchant account.**
-- The source-level live sales lock `LIVE_SALES_RELEASED = false` remains in place.
-- The draft branch prepares Stripe-hosted U.S. address eligibility, required billing address, and `automatic_tax[enabled]=true` behind the existing hard lock. Not deployed.
+- Supabase project `hwsavnkammbhgizltqrc`: reversal-ordering migration was tested against a disposable local PostgreSQL 17 database and applied to production. Refund-before-checkout, checkout-before-refund, duplicate delivery, dispute precedence, and preservation of an existing paid order passed locally.
+- No paid Supabase preview branch was created.
+- Maria test-mode products and prices exist: email templates ($9), cleaning brand kit ($19), and niche bundle ($29).
+- Maria's active sandbox webhook destination listens to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, and `charge.dispute.created`.
+- Dedicated Maria test checkout and webhook functions are deployed; the checkout function is version 2 and webhook version 4. They reject live-mode credentials and are isolated from the shared Alexander test functions.
+- Private bucket `northstar-private-products` contains the expected three private objects. Contents were inspected: 50 email starters; a 21-section cleaning kit; and a valid ZIP with 30 templates plus a start guide.
+- A $9 email-template test checkout completed using the Stripe test card. Stripe reports paid in test mode. Its webhook delivery returned 503, so no new order row or library entitlement was recorded.
+- The webhook code and sandbox configuration were corrected after that attempt. The current signing secret was inadvertently exposed in browser accessibility output and must be rotated by the owner before webhook retry.
+- CI run 42527352191 failed on stale storefront assertions and an old test-key assertion. Those assertions have since been updated; the latest run still needs confirmation.
+- The live production `stripe-test-store.html` remains unchanged and contains old Alexander Payment Links. Do not use them. The corrected Maria-only test storefront is still only on draft PR #3.
+- Stripe Tax remains pending, with no confirmed head office or tax registrations. The legal seller has not been confirmed.
+- Live checkout remains disabled; membership checkout remains paused.
 
-## Technical gates still requiring real verification
+## Remaining technical gates
 
-- [ ] Use a **Maria-owned Stripe sandbox** for payment tests; do not rely on Alexander's sandbox as equivalent.
-- [ ] Verify checkout creates exactly one intended product, and unpaid/expired/failed payments grant no access.
-- [ ] Exercise a real sandbox payment -> signed webhook -> order record -> verified-user product listing -> signed download -> actual file fetch.
-- [ ] Test webhook duplicate delivery, delayed delivery, signature failure, refunds, disputes, and reversal-before-checkout ordering.
-- [ ] Verify cross-account download denial, wrong-file denial, expired tokens, email verification, and absence of leaked download URLs.
-- [ ] Validate Stripe's U.S.-only shipping-address restriction and ensure foreign buyers cannot complete checkout. Confirm the extra shipping-address collection is acceptable for digital products.
-- [ ] Confirm automatic tax calculation and tax registrations in the correct merchant account; do not enable real sales before registration.
-- [ ] Inspect actual files and licenses to assign product-specific Stripe Tax codes; do not infer classification from product names alone.
-- [ ] Review leaked-password protection in Supabase Auth; enable when supported by plan/settings, and retest signup/sign-in.
-- [ ] Confirm production support inbox, refund process, site disclosures, and customer access flows.
-- [ ] Merge/deploy only after review, and keep hard-coded live release lock off until explicit approval.
+- [ ] Owner rotates the exposed Maria sandbox webhook secret and replaces `NORTHSTAR_MARIA_TEST_WEBHOOK_SECRET` in Supabase.
+- [ ] Resend the failed test event; verify exactly one Supabase order, the matching private object path, account library entry, and successful signed file retrieval.
+- [ ] Verify wrong-order, wrong-file, unauthenticated, and expired-download access is denied.
+- [ ] Test all three Maria test SKUs end to end.
+- [ ] Verify duplicate event delivery, refund, dispute, and revocation after entitlement creation.
+- [ ] Confirm latest PR CI passes.
+- [ ] Review the updated test storefront and customer-facing product/legal copy before publication.
 
-## Human/legal gates
+## Manual owner/legal gates
 
-- [ ] Maria confirms merchant responsibility, Stripe verification, payouts, and bank ownership directly with Stripe.
-- [ ] Confirm assumed-name/DBA requirements, product licenses, and tax treatment with appropriate professional advice.
-- [ ] Complete NY Certificate of Authority if required before taxable sales; then register the jurisdiction in Maria's Stripe Tax account.
-- [ ] Obtain explicit go-live authorization after all tests and registrations.
+- [ ] Confirm the legal seller, business details, product licenses, support and refund process, and Stripe verification with the responsible adult.
+- [ ] Resolve Stripe Tax head office, tax obligations, and registrations with the seller. Do not invent an address or tax treatment.
+- [ ] Keep live sales disabled until all verification is complete and the owner explicitly approves launch.
 
 ## Release rule
 
-Passing CI, a working webhook endpoint, or existing sandbox orders are **not** evidence of a complete live payment-to-delivery journey. Do not change `LIVE_SALES_RELEASED` to `true` or reactivate Payment Links until all relevant gates are verified.
-
-
-## Maria test-account integration findings (2026-11-08 follow-up)
-
-- Created and re-read **Maria's test-mode** products/prices (one-time permanent downloads; tax-exclusive):
-  - Email templates: `prod_VamEkJxaVDeFHC` / `price_1UZagOPKQ5OP9J0xXQ7hmn4s` / USD 9.
-  - Cleaning brand kit: `prod_VamEPvBQyW2KdV` / `price_1UZagQPKQ5OP9J0xxiZTjTVw` / USD 19.
-  - Niche template bundle: `prod_VamEmFPbRnqjyM` / `price_1UZagRPKQ5OP9J0xv5wjMrak` / USD 29.
-- Maria test Stripe Tax status: **pending**, missing `head_office`; zero tax registrations. Do not invent a legal address or register tax jurisdictions.
-- Maria test Stripe webhook endpoint `we_1UX4znPKQ5OP9J0xqcoRFZH3` targets `northstar-stripe-webhook`. This alone does not prove its signing secret matches the deployed function.
-- **Integration blocker:** deployed `northstar-sandbox-checkout` v8 and `northstar-stripe-webhook` v10 both use existing `NORTHSTAR_PRICE_FOCUS/LAUNCH/CREATOR` environment mappings and a shared `NORTHSTAR_STRIPE_TEST_SECRET_KEY`. These are not verified as Maria-specific. Do not overwrite existing secrets: doing so could break Alexander's earlier test environment.
-- **Reversal-ordering blocker:** `northstar_record_payment_reversal` updates an existing order and throws `Order not found` if a refund/dispute event precedes order insertion. `northstar_record_paid_checkout` unconditionally sets an existing session order back to `paid` on conflict, so an out-of-order/duplicate checkout event after a reversal could restore access. Address in an isolated migration and test before deploying.
-- **Access behavior:** private downloads v15 only includes orders with `payment_status=paid`; this prevents access after a successfully recorded reversal, but the ordering failure above prevents a blanket guarantee.
-- **Next safe implementation:** introduce separately named Maria-test Stripe secret, webhook signing secret, and price mapping (prefer dedicated Maria-test Edge Functions). Verify the correct endpoint/secret pair and end-to-end test transactions before changing any deployed shared configuration.
+No live checkout, real payment, paid preview branch, or merge is authorized by this audit. A paid sandbox session is technical test data, not evidence that the full payment-to-delivery path works.
