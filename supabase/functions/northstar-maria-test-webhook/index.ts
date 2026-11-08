@@ -29,7 +29,7 @@ Deno.serve(async req => {
   const stripeKey = Deno.env.get("NORTHSTAR_MARIA_TEST_STRIPE_SECRET_KEY") || "";
   const base = Deno.env.get("SUPABASE_URL") || "";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-  if (!signingSecret.startsWith("whsec_") || !stripeKey.startsWith("sk_test_") || !base || !serviceKey) {
+  if (!signingSecret.startsWith("whsec_") || !/^(?:sk|rk)_test_[A-Za-z0-9]+$/.test(stripeKey) || !base || !serviceKey) {
     return response({ error: "Maria sandbox not configured" }, 503);
   }
   const raw = await req.text();
