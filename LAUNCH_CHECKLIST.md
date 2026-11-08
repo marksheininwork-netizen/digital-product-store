@@ -133,3 +133,13 @@ Updated 2026-11-02. This is a task list, not a declaration of completion.
 - [ ] Verify GitHub Actions build and production deployment for the subscription pause and latest storefront text.
 - [ ] Resolve live Stripe secret-key authentication failure, then test signed non-payment webhook and sandbox delivery/refund without live charges.
 - [ ] Verify paid file contents and distinguish them clearly from the free interactive tools; get product-specific tax treatment before any live launch.
+
+
+## 2026-11-07 — Proposed change of legal seller to Maria Sheinin
+
+- [x] Update website source disclosures, shop, test store, membership and account pages to identify Maria Sheinin as the **intended** sole-proprietor seller.
+- [ ] Maria must personally confirm ownership, consent to Stripe account setup, and complete required identity, SSN/tax-ID and document verification herself.
+- [ ] Do not treat the existing Alexander Tsudikman Stripe live or test account as transferred to Maria. Confirm with Stripe whether a legal-entity/account-owner change is supported or whether Maria must create a separate account. Never enter false identity details or use another person's verification.
+- [ ] Reconcile Stripe account ownership, connected webhooks, API keys, product prices, checkout URLs, receipt details, and payout destination **after** Maria's Stripe account is verified. Existing test links belong to the previous account and must not be used as Maria's live checkout.
+- [ ] Confirm New York sales-tax classification, nexus/registration, and Maria's tax status before live selling. Keep checkout locked and subscription paused.
+- [ ] Verify production deployment, end-to-end fulfillment, refunds and disputes under the correct merchant account.
