@@ -1,1 +1,92 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Northstar Studio Stripe test checkout for digital products."><title>Stripe Test Store | Northstar Studio</title><style>:root{font-family:system-ui,sans-serif;background:#f5f8f5;color:#173e36}*{box-sizing:border-box}body{margin:0}header{padding:20px;background:#173e36;color:white}header a{color:white;text-decoration:none}main{max-width:1040px;margin:auto;padding:38px 18px}h1{font-size:clamp(2rem,5vw,3rem)}p{line-height:1.6;color:#50675b}.notice{border:1px solid #d8b36e;background:#fff5df;padding:16px;border-radius:12px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:24px}.card{background:white;border:1px solid #dce6de;border-radius:16px;padding:22px;display:flex;flex-direction:column}.card h2{font-size:1.3rem}.price{font-size:2rem;font-weight:800;margin-top:auto}.btn{display:block;text-align:center;padding:13px;background:#173e36;color:white;text-decoration:none;border-radius:9px;font-weight:700;margin-top:16px}.pill{background:#fff0c8;border-radius:99px;padding:4px 9px;font-size:.75rem;font-weight:700}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style></head><body><header><a href="./index.html">✳ NORTHSTAR STUDIO</a> · <a href="./products.html">Products</a> · <a href="./account.html">My account</a></header><main><span class="pill">STRIPE TEST MODE</span><h1>Test the checkout experience</h1><p><strong>Seller:</strong> Maria Sheinin is the intended individual sole-proprietor seller for future paid digital products on this website. Paid checkout remains disabled pending verification of the payment account and legal requirements. Northstar Studio identifies the website and product collection; it is not the seller's legal or registered trade name.</p><p>The previous Stripe test links belong to the prior merchant account and are disabled during the transition to Maria Sheinin. The subscription option is also paused.</p><div class="notice"><strong>Not a live store.</strong> The previous test payment links have been removed from this page. No payments can be initiated here. Historical sandbox purchases may still be visible in the account portal, but those tests do not establish readiness under Maria's merchant account. Delivery for the Cleaning Business Brand Kit and Niche Template Bundle still needs end-to-end verification. Membership access is not activated. Secure delivery still needs broader testing, including refunds and disputes, before any live launch.</div><div class="grid"><article class="card"><h2>50 Editable Email Templates</h2><p>Fill-in-the-blank outreach, follow-up and business communication starters.</p><p class="price">$9 <small>test</small></p><span class="btn" role="status" style="background:#dce5df;color:#345449">Test checkout paused — new merchant pending</span></article><article class="card"><h2>Cleaning Business Brand Kit</h2><p>Customizable marketing copy, palette and starter messaging for residential cleaners.</p><p class="price">$19 <small>test</small></p><span class="btn" role="status" style="background:#dce5df;color:#345449">Test checkout paused — new merchant pending</span></article><article class="card"><h2>Niche Template Bundle</h2><p>Industry-focused starter templates for common small-business workflows.</p><p class="price">$29 <small>test</small></p><span class="btn" role="status" style="background:#dce5df;color:#345449">Test checkout paused — new merchant pending</span></article><article class="card"><h2>Northstar Toolbox Plus</h2><p>Recurring membership is not ready. Automatic access and cancellation management must be verified before subscription testing.</p><p class="price">$12/month <small>test</small></p><span class="btn" role="status" style="background:#dce5df;color:#345449">Subscription checkout paused</span></article></div><p><strong>For historical sandbox orders:</strong> <a href="./account.html">Sign in to your Northstar account</a> using the email entered at checkout to access eligible test purchases.</p><p><strong>Before going live:</strong> verify refund and dispute revocation, payment-failure behavior, product contents, pricing, taxes, business identity, customer support, and live-mode webhook configuration. Do not use these test links for real customers.</p></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Northstar Studio Maria sandbox checkout verification page.">
+  <title>Maria Sandbox Checkout Test | Northstar Studio</title>
+  <style>
+    :root{font-family:system-ui,sans-serif;background:#f5f8f5;color:#173e36}
+    *{box-sizing:border-box}
+    body{margin:0}
+    header{padding:20px;background:#173e36;color:white}
+    header a{color:white;text-decoration:none}
+    main{max-width:1040px;margin:auto;padding:38px 18px}
+    h1{font-size:clamp(2rem,5vw,3rem)}
+    p{line-height:1.6;color:#50675b}
+    .notice{border:1px solid #d8b36e;background:#fff5df;padding:16px;border-radius:12px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:24px}
+    .card{background:white;border:1px solid #dce6de;border-radius:16px;padding:22px;display:flex;flex-direction:column}
+    .card h2{font-size:1.3rem}
+    .price{font-size:2rem;font-weight:800;margin-top:auto}
+    .btn{display:block;width:100%;text-align:center;padding:13px;background:#173e36;color:white;border:0;border-radius:9px;font:inherit;font-weight:700;margin-top:16px;cursor:pointer}
+    .btn:disabled{opacity:.65;cursor:wait}
+    .pill{background:#fff0c8;border-radius:99px;padding:4px 9px;font-size:.75rem;font-weight:700}
+    #checkout-status{min-height:1.5em}
+    @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  </style>
+  <script defer>
+    const checkoutEndpoint = "https://hwsavnkammbhgizltqrc.supabase.co/functions/v1/northstar-maria-test-checkout";
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-sku]");
+      if (!button) return;
+      const status = document.getElementById("checkout-status");
+      for (const candidate of document.querySelectorAll("[data-sku]")) candidate.disabled = true;
+      status.textContent = "Opening Maria's sandbox checkout…";
+      try {
+        const response = await fetch(checkoutEndpoint, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ sku: button.dataset.sku }),
+        });
+        const data = await response.json();
+        if (!response.ok || data.test_mode !== true || typeof data.url !== "string") {
+          throw new Error("Sandbox checkout is unavailable.");
+        }
+        const checkout = new URL(data.url);
+        if (checkout.protocol !== "https:" || checkout.hostname !== "checkout.stripe.com") {
+          throw new Error("Unexpected checkout destination.");
+        }
+        window.location.assign(checkout.href);
+      } catch (error) {
+        status.textContent = error instanceof Error ? error.message : "Sandbox checkout is unavailable.";
+        for (const candidate of document.querySelectorAll("[data-sku]")) candidate.disabled = false;
+      }
+    });
+  </script>
+</head>
+<body>
+  <header><a href="./index.html">✳ NORTHSTAR STUDIO</a> · <a href="./products.html">Products</a> · <a href="./account.html">My account</a></header>
+  <main>
+    <span class="pill">MARIA STRIPE SANDBOX</span>
+    <h1>Test the checkout experience</h1>
+    <p><strong>Test merchant:</strong> Maria Sheinin's Stripe account in test mode. This is for technical verification only and does not establish who may legally sell the products.</p>
+    <p><strong>Legal seller:</strong> Confirm the legal seller, business details, and required disclosures with the adult seller before any live sales. Northstar Studio identifies the website and product collection; it is not itself a legal seller or registered trade name.</p>
+    <div class="notice"><strong>Not a live store.</strong> The three one-time checkouts below use Maria's sandbox and cannot accept real payments. Test products and access are still under verification. Tax configuration, seller identity, refund/dispute handling, account access, and product licenses must be confirmed before launch. Membership checkout remains paused.</div>
+    <p id="checkout-status" role="status" aria-live="polite"></p>
+    <div class="grid">
+      <article class="card">
+        <h2>50 Editable Email Templates</h2>
+        <p>Fill-in-the-blank outreach, follow-up and business communication starters.</p>
+        <p class="price">$9 <small>test</small></p>
+        <button class="btn" type="button" data-sku="emails">Open sandbox checkout</button>
+      </article>
+      <article class="card">
+        <h2>Cleaning Business Brand Kit</h2>
+        <p>Customizable marketing copy, palette and starter messaging for residential cleaners.</p>
+        <p class="price">$19 <small>test</small></p>
+        <button class="btn" type="button" data-sku="cleaning">Open sandbox checkout</button>
+      </article>
+      <article class="card">
+        <h2>Niche Template Bundle</h2>
+        <p>Industry-focused starter templates for common small-business workflows.</p>
+        <p class="price">$29 <small>test</small></p>
+        <button class="btn" type="button" data-sku="niche">Open sandbox checkout</button>
+      </article>
+    </div>
+    <p><strong>Northstar Toolbox Plus:</strong> Membership checkout is paused; access, billing, and cancellation flows are not verified.</p>
+    <p><strong>After a test purchase:</strong> <a href="./account.html">Sign in to your Northstar account</a> using the email entered at checkout to access any eligible test purchase.</p>
+    <p><strong>Before going live:</strong> verify the seller identity, tax obligations, product pricing and licenses, customer support, payment failures, duplicate events, refunds, disputes, and file-delivery access controls. Do not use sandbox checkout links for real customers.</p>
+  </main>
+</body>
+</html>
