@@ -9,6 +9,7 @@ test('Maria webhook only accepts signed test-mode events', () => {
   assert.match(webhook, /NORTHSTAR_MARIA_TEST_STRIPE_SECRET_KEY/);
   assert.match(webhook, /crypto\.subtle\.sign/);
   assert.match(webhook, /stripe-signature/);
+  assert.ok(webhook.includes("/^t=\\d+$/"), "timestamp parser must match numeric Stripe signature timestamps");
   assert.match(webhook, /event\.livemode !== false/);
   assert.doesNotMatch(webhook, /NORTHSTAR_STRIPE_TEST_SECRET_KEY|STRIPE_WEBHOOK_SECRET|(?:sk|rk)_live_/);
 });
