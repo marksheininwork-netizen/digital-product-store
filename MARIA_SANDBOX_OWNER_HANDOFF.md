@@ -4,10 +4,10 @@
 
 - PR #3 on `northstar-prelaunch-ci-gates-20261108` remains a draft. Do not merge or publish it yet.
 - The reversal-ordering migration passed a disposable local PostgreSQL test and was applied to Supabase production. No paid Supabase preview branch was created.
-- Dedicated Maria test checkout and webhook functions are deployed (checkout v3, webhook v4). The checkout accepts only Maria's test prices and test-mode credentials.
-- One $9 email-template checkout was completed using the Stripe test card. Stripe shows it as paid in test mode, but its webhook delivery returned 503 and no corresponding order or new library access was recorded.
+- Dedicated Maria test checkout and webhook functions are deployed (checkout v3, webhook v4). The shared test webhook is version 14 with a narrow guard that acknowledges Maria checkout references without mapping them to legacy products; no shared signing secret was changed.
+- Two $9 email-template Checkout Sessions were completed using the Stripe test card. Both are paid in test mode, each has the expected email-template price and Maria-only reference, and neither has a matching Supabase order or new library access yet. Stripe reports two pending webhook deliveries for each event.
 - The webhook configuration was corrected and redeployed. The currently stored signing secret was inadvertently exposed in the browser accessibility output during diagnosis and must be rotated before retrying delivery.
-- CI run 42527725433 (run 38) passed install, tests, and build for branch commit `6a17e25a57be465fc5be06854399b63ec82939c3`. This handoff update will trigger a fresh PR check.
+- CI run 42530248726 (run 42) passed install, tests, and build for branch commit `f63c845d595e0d3f0176cb50d43be5d7be6c5047`. This handoff update will trigger a fresh PR check.
 - The production test-store page has not been updated. It still shows the old Alexander Payment Links; do not use those links. The branch version routes to Maria's sandbox and does not claim the legal seller is established.
 - Stripe Tax is pending; seller identity and tax registrations remain unresolved. Live checkout remains disabled.
 
@@ -21,7 +21,7 @@ A security policy requires the account owner to handle the credential rotation a
 
 ## Remaining verification
 
-- Confirm the failed paid test event records exactly one email-template order and matching private object path.
+- After the owner rotates the dedicated signing secret, confirm each paid test event records exactly one email-template order and matching private object path.
 - Fetch the delivered file from the signed-in library and verify it matches `email-swipe-file.txt`.
 - Verify unauthorized and wrong-file downloads remain denied.
 - Verify checkout, webhook, library access, and download for Cleaning Brand Kit ($19) and Niche Template Bundle ($29), using test mode only.
