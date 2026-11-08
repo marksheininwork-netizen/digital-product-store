@@ -6,7 +6,7 @@ const checkout = readFileSync(new URL('../supabase/functions/northstar-maria-tes
 
 test('Maria test checkout uses a dedicated test key, never live or legacy shared secrets', () => {
   assert.match(checkout, /NORTHSTAR_MARIA_TEST_STRIPE_SECRET_KEY/);
-  assert.match(checkout, /sk_test_/);
+  assert.ok(checkout.includes("(?:sk|rk)_test_"));
   assert.doesNotMatch(checkout, /NORTHSTAR_STRIPE_TEST_SECRET_KEY|NORTHSTAR_STRIPE_LIVE_SECRET_KEY|sk_live_/);
   assert.match(checkout, /session\.livemode !== false/);
 });
