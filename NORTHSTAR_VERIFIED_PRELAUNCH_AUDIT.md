@@ -37,3 +37,17 @@
 ## Release rule
 
 Passing CI, a working webhook endpoint, or existing sandbox orders are **not** evidence of a complete live payment-to-delivery journey. Do not change `LIVE_SALES_RELEASED` to `true` or reactivate Payment Links until all relevant gates are verified.
+
+
+## Maria test-account integration findings (2026-11-08 follow-up)
+
+- Created and re-read **Maria's test-mode** products/prices (one-time permanent downloads; tax-exclusive):
+  - Email templates: `prod_VamEkJxaVDeFHC` / `price_1UZagOPKQ5OP9J0xXQ7hmn4s` / USD 9.
+  - Cleaning brand kit: `prod_VamEPvBQyW2KdV` / `price_1UZagQPKQ5OP9J0xxiZTjTVw` / USD 19.
+  - Niche template bundle: `prod_VamEmFPbRnqjyM` / `price_1UZagRPKQ5OP9J0xv5wjMrak` / USD 29.
+- Maria test Stripe Tax status: **pending**, missing `head_office`; zero tax registrations. Do not invent a legal address or register tax jurisdictions.
+- Maria test Stripe webhook endpoint `we_1UX4znPKQ5OP9J0xqcoRFZH3` targets `northstar-stripe-webhook`. This alone does not prove its signing secret matches the deployed function.
+- **Integration blocker:** deployed `northstar-sandbox-checkout` v8 and `northstar-stripe-webhook` v10 both use existing `NORTHSTAR_PRICE_FOCUS/LAUNCH/CREATOR` environment mappings and a shared `NORTHSTAR_STRIPE_TEST_SECRET_KEY`. These are not verified as Maria-specific. Do not overwrite existing secrets: doing so could break Alexander's earlier test environment.
+- **Reversal-ordering blocker:** `northstar_record_payment_reversal` updates an existing order and throws `Order not found` if a refund/dispute event precedes order insertion. `northstar_record_paid_checkout` unconditionally sets an existing session order back to `paid` on conflict, so an out-of-order/duplicate checkout event after a reversal could restore access. Address in an isolated migration and test before deploying.
+- **Access behavior:** private downloads v15 only includes orders with `payment_status=paid`; this prevents access after a successfully recorded reversal, but the ordering failure above prevents a blanket guarantee.
+- **Next safe implementation:** introduce separately named Maria-test Stripe secret, webhook signing secret, and price mapping (prefer dedicated Maria-test Edge Functions). Verify the correct endpoint/secret pair and end-to-end test transactions before changing any deployed shared configuration.
