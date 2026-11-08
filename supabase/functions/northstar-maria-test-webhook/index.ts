@@ -15,8 +15,7 @@ async function verify(raw: string, header: string, secret: string) {
   if (!timestamp || !signatures.length || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
   const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const digest = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(timestamp + "." + raw)));
-  const hex = Array.from(digest, x => x.toString(16).padStart(2, "0")).join("");
-  return signatures.some(x => x === hex);
+    return signatures.some(x => {\n    const bytes = new Uint8Array(x.match(/../g)!.map(h => parseInt(h, 16)));\n    let diff = 0;\n    for (let i = 0; i < digest.length; i++) diff |= bytes[i] ^ digest[i];\n    return diff === 0;\n  });
 }
 Deno.serve(async req => {
   if (req.method !== "POST") return response({ error: "Method not allowed" }, 405);
@@ -33,7 +32,7 @@ Deno.serve(async req => {
   }
   let event: any;
   try { event = JSON.parse(raw); } catch { return response({ error: "Invalid JSON" }, 400); }
-  if (!event.id || event.livemode !== false) return response({ error: "Test events only" }, 400);
+  if (typeof event.id !== "string" || !event.id.startsWith("evt_") || event.livemode !== false) return response({ error: "Test events only" }, 400);
   const obj = event.data?.object || {};
   const stripe = async (path: string) => {
     const result = await fetch("https://api.stripe.com/v1" + path, { headers: { authorization: "Bearer " + stripeKey } });
