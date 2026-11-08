@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { isQualifyingRefund } from '../supabase/functions/northstar-maria-test-webhook/refund-qualifier.js';
 const webhook = readFileSync(new URL('../supabase/functions/northstar-maria-test-webhook/index.ts', import.meta.url), 'utf8');
 const checkout = readFileSync(new URL('../supabase/functions/northstar-maria-test-checkout/index.ts', import.meta.url), 'utf8');
+const sharedWebhook = readFileSync(new URL('../supabase/functions/northstar-stripe-webhook/index.ts', import.meta.url), 'utf8');
 test('Maria webhook only accepts signed test-mode events', () => {
   assert.match(webhook, /NORTHSTAR_MARIA_TEST_WEBHOOK_SECRET/);
   assert.match(webhook, /NORTHSTAR_MARIA_TEST_STRIPE_SECRET_KEY/);
@@ -50,4 +51,9 @@ test('refunds with no amount, a mismatched intent, or an inconsistent charge do 
   assert.equal(isQualifyingRefund(partial, { ...partial, livemode: true }), false);
   assert.equal(isQualifyingRefund(partial, { ...partial, amount_refunded: 50 }), false);
   assert.equal(isQualifyingRefund(partial, { ...partial, amount_refunded: 901 }), false);
+});
+
+test('shared sandbox webhook acknowledges Maria sessions without mapping them into legacy products', () => {
+  assert.match(sharedWebhook, /obj\.client_reference_id==='northstar-maria-test'/);
+  assert.match(sharedWebhook, /return out\(\{received:true,ignored:true\}\)/);
 });
