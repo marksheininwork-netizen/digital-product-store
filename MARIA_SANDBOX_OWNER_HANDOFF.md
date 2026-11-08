@@ -4,10 +4,10 @@
 
 - PR #3 on `northstar-prelaunch-ci-gates-20261108` remains a draft. Do not merge or publish it yet.
 - The reversal-ordering migration passed a disposable local PostgreSQL test and was applied to Supabase production. No paid Supabase preview branch was created.
-- Dedicated Maria test checkout and webhook functions are deployed (checkout v2, webhook v4). The checkout accepts only Maria's test prices and test-mode credentials.
+- Dedicated Maria test checkout and webhook functions are deployed (checkout v3, webhook v4). The checkout accepts only Maria's test prices and test-mode credentials.
 - One $9 email-template checkout was completed using the Stripe test card. Stripe shows it as paid in test mode, but its webhook delivery returned 503 and no corresponding order or new library access was recorded.
 - The webhook configuration was corrected and redeployed. The currently stored signing secret was inadvertently exposed in the browser accessibility output during diagnosis and must be rotated before retrying delivery.
-- CI on the latest branch commit is pending. Prior run 42527352191 failed on outdated storefront assertions and one test-key assertion; those tests have been corrected on the branch.
+- CI run 42527725433 (run 38) passed install, tests, and build for branch commit `6a17e25a57be465fc5be06854399b63ec82939c3`. This handoff update will trigger a fresh PR check.
 - The production test-store page has not been updated. It still shows the old Alexander Payment Links; do not use those links. The branch version routes to Maria's sandbox and does not claim the legal seller is established.
 - Stripe Tax is pending; seller identity and tax registrations remain unresolved. Live checkout remains disabled.
 
@@ -26,7 +26,7 @@ A security policy requires the account owner to handle the credential rotation a
 - Verify unauthorized and wrong-file downloads remain denied.
 - Verify checkout, webhook, library access, and download for Cleaning Brand Kit ($19) and Niche Template Bundle ($29), using test mode only.
 - Test duplicate event delivery, refund, dispute, and revocation after access is recorded.
-- Confirm CI is green before the PR is considered ready.
+- Confirm CI passes on the latest documentation commit before the PR is considered ready.
 
 ## Manual legal and launch gates
 
