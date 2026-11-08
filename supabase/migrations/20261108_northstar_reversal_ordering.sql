@@ -43,7 +43,7 @@ create or replace function public.northstar_record_paid_checkout(
 as $function$
 declare v_id uuid; v_status text;
 begin
-  if coalesce(p_payment_intent,'') = '' then raise exception 'Payment intent required'; end if;
+  if coalesce(p_payment_intent,'') = '' or coalesce(p_session_id,'') = '' or\n     coalesce(p_email,'') = '' or coalesce(p_price,'') = '' or coalesce(p_file,'') = '' then\n    raise exception 'Incomplete paid checkout';\n  end if;
   -- Serialize checkout and reversal updates for the same payment intent.
   perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_payment_intent, 0));
   insert into public.northstar_stripe_events(event_id,event_type)
@@ -73,3 +73,9 @@ begin
   return true;
 end
 $function$;
+
+-- Ensure all SECURITY DEFINER RPCs remain service-only.
+revoke all on function public.northstar_record_payment_reversal(text,text,text) from public, anon, authenticated;
+revoke all on function public.northstar_record_paid_checkout(text,text,text,bigint,text,text,text,text) from public, anon, authenticated;
+grant execute on function public.northstar_record_payment_reversal(text,text,text) to service_role;
+grant execute on function public.northstar_record_paid_checkout(text,text,text,bigint,text,text,text,text) to service_role;
