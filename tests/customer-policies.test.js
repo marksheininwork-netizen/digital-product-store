@@ -42,9 +42,10 @@ test('refund and license terms are linked and include usable buyer protections',
   assert.doesNotMatch(pages,/Add a recipient before sending/);
 });
 
-test('premium storefront route is published and membership avoids unverified seller claims',async()=>{
+test('premium storefront route is published and membership states planned seller pending verification',async()=>{
   const membership=await readFile(new URL('../membership.html',import.meta.url),'utf8');
   assert.match(config,/const pages = \[[^\]]*'shop'/);
-  assert.match(membership,/Seller identity and required disclosures are being confirmed/);
+  assert.match(membership,/Planned legal seller: Maria Sheinin, acting individually/);
+  assert.match(membership,/Identity verification and required disclosures must be completed before paid checkout is enabled/);
   assert.doesNotMatch(membership,/Seller: (?:Maria Sheinin|Alexander Tsudikman)/);
 });
