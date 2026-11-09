@@ -52,3 +52,13 @@ The three Maria Test one-time prices are tax-exclusive and USD. Their Stripe Tax
 3. Review the Niche ZIP contents and confirm the customer refund/support process is monitored.
 4. Obtain a successful Maria Test $29 ZIP fulfillment test and complete the missing webhook, access-control, expiration, duplicate, failed-payment, dispute, second-session, and mobile cases.
 5. Keep live checkout, live automatic tax, and subscriptions disabled until those gates are complete and the owner approves a production release.
+
+
+## Tax code candidate research — not applied
+
+Stripe Tax’s digital-products guidance says treatment can vary with delivery, access, customer type, and use; a product tax code is a classification input, not a legal determination. The following exact candidates were returned by Stripe’s Tax Code Search API and are recorded only for Maria and her tax adviser to confirm:
+
+- The three downloadable template offers could be compared against `txcd_10503000` — “Digital other news or documents - downloadable - non subscription - with permanent rights” — if the products are standalone documents and the intended license provides permanent access. This is only a candidate; the Niche ZIP contents remain unreviewed.
+- Toolbox Plus could be compared against `txcd_10103001` — “Software as a service (SaaS) - business use” — if the paid plan is confirmed to sell hosted business software access. It remains paused. A consumer-use offering may require a different candidate.
+
+New York Tax Department Advisory Opinion TSB-A-12(26)S treated standalone downloadable patterns/instructions not sold with tangible items or software as nontaxable under that petitioner’s facts. TSB-A-13(22)S treated paid access to interactive templates through prewritten software as taxable software under its facts; New York’s computer-software bulletin says prewritten software remains taxable when electronically delivered. These opinions are fact-specific and do not decide Northstar’s products. No tax code was written to Stripe. See [Stripe digital-products guidance](https://docs.stripe.com/tax/digital-products), [NY TSB-A-12(26)S](https://www.tax.ny.gov/pdf/advisory_opinions/sales/a12_26s.pdf), [NY TSB-A-13(22)S](https://www.tax.ny.gov/pdf/advisory_opinions/sales/a13_22s.pdf), and [NY computer software bulletin](https://www.tax.ny.gov/pubs_and_bulls/tg_bulletins/st/computer_software.htm).
